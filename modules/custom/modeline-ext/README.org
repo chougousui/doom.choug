@@ -1,0 +1,4 @@
+#+title: :custom modeline-ext
+
+* Description
+仿照spacemacs设计modeline元素

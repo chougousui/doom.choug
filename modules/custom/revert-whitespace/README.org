@@ -1,0 +1,4 @@
+#+title: :custom revert-whitespace
+
+* Description
+撤销 =~/.config/emacs/lisp/doom-ui.el= 对 =whitespace= 的自定义

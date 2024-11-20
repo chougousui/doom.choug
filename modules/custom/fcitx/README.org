@@ -1,0 +1,5 @@
+#+title: :custom fcitx
+
+* Description
+在使用一些快捷键时自动切换中英文状态而无需用户自己切换
+和 :input chinese 有点冲突, chinese里面有fcitx包

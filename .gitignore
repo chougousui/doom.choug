@@ -1,0 +1,8 @@
+# IDEs and editors
+.idea/
+.vscode/
+.dir-locals.el
+
+# OS
+.DS_Store
+.Thumbs.db

@@ -1,0 +1,4 @@
+#+title: :custom doom-dashboard-ext
+
+* Description
+自定义一下dashboard的显示内容

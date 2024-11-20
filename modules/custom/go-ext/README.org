@@ -1,0 +1,5 @@
+#+title: :custom go-ext
+
+* Description
+扩展一些go-mode的配置.
+使用 ~golines -m120 --base-formatter=gofumpt~ 来格式化go文件

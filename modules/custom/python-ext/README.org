@@ -1,0 +1,4 @@
+#+title: :custom python-ext
+
+* Description
+自定义一些python模式下的表现

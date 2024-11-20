@@ -1,0 +1,10 @@
+#+title: :custom fnm
+
+* Description
+处理fnm工具导致的动态路径问题
+
+最终的解决方案是:
+
+emacs只需要用到fnm的默认环境来运行lsp等,
+因此直接将默认路径(即名为default的alias的地址)添加到PATH中
+动作时间点是emacs以GUI启动时

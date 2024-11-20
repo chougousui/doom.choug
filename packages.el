@@ -48,3 +48,9 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
+
+;; 安装spacemacs主题
+(package! spacemacs-theme)
+
+;; ws-butler的bug比较多,而且功能和许多格式化工具重叠,就不用了
+(package! ws-butler :disable t)

@@ -1,0 +1,8 @@
+#+title: :custom choug
+
+* Description
+自定义模块,实际上叫做my-defaults更合适
+实现一些自己的习惯
+
+1. 引入swiper
+2. 重新绑定一些按键功能

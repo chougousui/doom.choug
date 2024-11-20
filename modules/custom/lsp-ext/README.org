@@ -1,0 +1,5 @@
+#+title: :custom lsp-ext
+
+* Description
+自定义一下lsp相关参数,doom emacs在这方面到底是如何想的,
+是希望用户直接在$DOOMDIR/config.el中配置吗?

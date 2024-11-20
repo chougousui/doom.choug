@@ -1,0 +1,4 @@
+#+title: :custom syntax-ext
+
+* Description
+重新定义一下flycheck的相关键位,!确定不是反人类的吗?
