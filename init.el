@@ -198,6 +198,7 @@
        doom-dashboard-ext
        lsp-ext
        syntax-ext
+       lisp-ext
        go-ext
        python-ext
        php-ext

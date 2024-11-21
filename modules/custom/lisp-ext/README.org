@@ -1,0 +1,5 @@
+#+title: :custom lisp-ext
+
+* Description
+doom没有特别好的格式化lisp的配置
+默认中用了一个bug很多的 =ws-butler=, 禁用之后还是得找一个替代的
