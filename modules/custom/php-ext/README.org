@@ -1,0 +1,7 @@
+#+title: :custom php-ext
+
+* Description
+对php环境的一些配置
+
+- 自定义格式化工具 =prettier-php=
+- 自定义开启自动保存的条件

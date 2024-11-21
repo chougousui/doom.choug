@@ -200,6 +200,7 @@
        syntax-ext
        go-ext
        python-ext
+       php-ext
        revert-whitespace
        modeline-ext
        choug
