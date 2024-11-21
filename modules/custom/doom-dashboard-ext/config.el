@@ -8,8 +8,8 @@
 (when (modulep! :ui doom-dashboard)
   ;; 自定义banner的色彩等
   ;; 各种继承都不成功,只能直接指定和font-lock-comment-face一样的fg
-  (custom-set-faces! '(doom-dashboard-banner :foreground "#008787" :background nil))
-  (custom-set-faces! '(doom-dashboard-loaded :foreground "#008787" :background nil))
+  (custom-set-faces! '(doom-dashboard-banner :foreground "#008787" :background unspecified))
+  (custom-set-faces! '(doom-dashboard-loaded :foreground "#008787" :background unspecified))
 
   ;; 定义新的居中函数，在两边都添加空格
   (defun +doom-dashboard--center (width string)
