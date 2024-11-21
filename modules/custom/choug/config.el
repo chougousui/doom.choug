@@ -99,3 +99,8 @@
 ;; (doom emacs的保守需求(仅仅在某些时候临时运行一下类似revert-buffer的功能)也很好)
 ;; 但我不能承受两个编辑器冲突
 (global-auto-revert-mode t)
+
+;; 默认显示trailing space
+;; 并且设置一个喜欢的颜色来显示
+(setq-default show-trailing-whitespace t)  ;; 一个emacs内置的变量,不依赖包
+(custom-set-faces! '(trailing-whitespace :background "#2aa1ae"))
