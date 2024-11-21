@@ -1,0 +1,5 @@
+#+title: :custom iedit
+
+* Description
+安装iedit并绑定到 =C-;=
+doom emacs默认绑定的似乎是 =embar-act=

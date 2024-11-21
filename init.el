@@ -203,6 +203,7 @@
        php-ext
        revert-whitespace
        modeline-ext
+       iedit
        choug
        fcitx
        )
