@@ -194,6 +194,7 @@
 
        :custom
        ;; company-ext
+       corfu-ext
        fnm
        doom-dashboard-ext
        lsp-ext
