@@ -1,3 +1,4 @@
-;;; custom/iedit/package.el -*- lexical-binding: t; -*-
+;; -*- no-byte-compile: t; -*-
+;;; custom/iedit/package.el
 
 (package! iedit)
