@@ -20,7 +20,7 @@
 (setq doom-leader-alt-key "M-m" ;; 重新配置emacs风格下的leader key
       doom-leader-key "M-m"     ;; 保险起见evil模式下的也一并配置
       confirm-kill-emacs nil    ;; 退出emacs前不要烦人地确认
-      ;; +default-want-RET-continue-comments nil ;; 不要在回车时接续注释
+      +default-want-RET-continue-comments nil ;; 不要在回车时接续注释
       )
 (setq-default truncate-lines nil                    ;; 在屏幕不够宽时,不要截断文本,而是换行显示
               word-wrap nil                         ;; 不要根据空格等直接换行,看起来有大段空格
