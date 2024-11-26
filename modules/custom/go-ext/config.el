@@ -28,3 +28,5 @@
   "使用golines格式化器格式化当前buffer"
   (interactive)
   (apheleia-format-buffer 'golines))
+
+(add-hook! 'go-dot-mod-mode-hook #'display-line-numbers-mode)
