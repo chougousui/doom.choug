@@ -7,13 +7,11 @@
    corfu-auto-delay 0.2
 
    ;; 通常是选择第一个,极少数情况会不选择第一个
-   corfu-preselect 'valid)
+   corfu-preselect 'valid
 
-  ;; 同样是indent-for-tab-command,
-  ;; spacemacs下对于已经打好的内容,光标放在后面按下tab不会补全,是正常行为(要么调整该行缩进,要么不做什么)
-  ;; 但是doom放在后面,会补全
-  (defun corfu--continue-p ()
-    "Check if completion should continue after a command."
-    (and (corfu--range-valid-p)
-         (eq last-command 'self-insert-command)))
-  )
+   ;; 同样是indent-for-tab-command,
+   ;; spacemacs下对于已经打好的内容,光标放在后面按下tab不会补全,是正常行为(要么调整该行缩进,要么不做什么)
+   ;; 但是doom放在后面,会补全
+   ;; 观察describe-key Tab的帮助文档后,似乎只能修改tab-always-indent
+   ;; 同时TUI模式下目前只能手动使用Tab触发补全而不能自动补全,因此保留Tab触发补全的功能
+   tab-always-indent (display-graphic-p)))
