@@ -154,7 +154,7 @@
        ;;ocaml             ; an objective camel
        org               ; organize your plain life in plain text
        (php +lsp +tree-sitter)               ; perl's insecure younger brother
-       ;;plantuml          ; diagrams for confusing people more
+       plantuml          ; diagrams for confusing people more
        ;;graphviz          ; diagrams for confusing yourself even more
        ;;purescript        ; javascript, but functional
        (python +lsp +pyright +tree-sitter)       ; beautiful is better than ugly
@@ -205,6 +205,7 @@
        php-ext
        revert-whitespace
        modeline-ext
+       plantuml-ext
        iedit
        choug
        fcitx
