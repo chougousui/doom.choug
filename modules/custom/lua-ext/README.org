@@ -1,0 +1,7 @@
+#+title: :custom lua-ext
+
+* Description
+扩展一些lua-mode的配置
+使用 =stylua -s= 来格式化lua文件,
+原本是使用 =stylua=, 默认只在当前文件夹下寻找配置文件
+使用 =-s= 才能搜索parent,和 =XDG_CONFIG=
