@@ -31,6 +31,7 @@
       warning-fill-column 118
       message-fill-column 112
       )
+(setq js-indent-level 2)                ;; 屏幕大,但代码复杂,嵌套也多了,不希望使用大缩进
 (map! :map global-map
       "C-t" nil         ;; 禁用Ctrl-t交换两个字符的功能
       )
