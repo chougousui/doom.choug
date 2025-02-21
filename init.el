@@ -195,6 +195,7 @@
        :custom
        ;; company-ext
        corfu-ext
+       vertico-ext
        fnm
        doom-dashboard-ext
        lsp-ext
