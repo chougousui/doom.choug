@@ -1,0 +1,4 @@
+#+title: :custom gptel
+
+* Description
+为了试用 [[https://github.com/karthink/gptel][gptel]] 这个包

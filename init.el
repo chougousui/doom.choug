@@ -212,4 +212,5 @@
        choug
        fcitx
        ;; codeium
+       ;; gptel
        )
