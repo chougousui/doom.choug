@@ -1,0 +1,4 @@
+#+title: :custom codeium
+
+* Description
+为试用 [[https://github.com/Exafunction/codeium.el][codeium.el]] 这个包,看看体验如何.

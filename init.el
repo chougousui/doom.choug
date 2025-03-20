@@ -211,4 +211,5 @@
        iedit
        choug
        fcitx
+       ;; codeium
        )
