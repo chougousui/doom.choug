@@ -29,4 +29,18 @@
   (interactive)
   (apheleia-format-buffer 'golines))
 
+;; 打开go.mod文件时希望不要显示行号
 (add-hook! 'go-dot-mod-mode-hook #'display-line-numbers-mode)
+
+;; 临时覆盖lsp-mode中关于golangci-lint的配置,让golangci-lint v2能够正常工作
+;; 直到lsp-mode的作者修复了这个问题
+;; https://github.com/emacs-lsp/lsp-mode/issues/4781
+(after! lsp-golangci-lint
+  (defun lsp-golangci-lint--get-initialization-options ()
+    "Return initialization options for golangci-lint-langserver."
+    (let ((opts (make-hash-table :test 'equal))
+          (command (vconcat `(,lsp-golangci-lint-path)
+                            ["run" "--output.json.path" "stdout" "--show-stats=false" "--issues-exit-code=1"]
+                            (lsp-golangci-lint--run-args))))
+      (puthash "command" command opts)
+      opts)))
