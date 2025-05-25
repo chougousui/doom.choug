@@ -18,8 +18,5 @@
                                  )
    ))
 
-;; 撤销doom-ui.el中添加的hook(doom-highlight-non-default-indentation-h根据一些模式修改hook内容)
-(add-hook 'window-setup-hook
-          (lambda ()
-            (remove-hook 'after-change-major-mode-hook #'doom-highlight-non-default-indentation-h))
-          -99)  ;; 比 doom-init-ui-h 晚执行
+;; 撤销 ~/.config/emacs/modules/config/default/config.el中对whitespace-style的修改
+(remove-hook 'after-change-major-mode-hook #'+emacs-highlight-non-default-indentation-h)
