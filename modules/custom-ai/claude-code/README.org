@@ -1,0 +1,49 @@
+#+title:    :custom-ai claude-code
+
+* Description :unfold:
+此模块提供了与 [[https://claude.ai/code][Anthropic Claude Code]] 的集成，允许您直接在 Emacs 中与 Claude AI 进行交互。它支持 AI 辅助编程、代码解释、重构和一般编程协助。
+
+** Module flags
+暂无
+
+** Packages
+- [[claude-code]] 来自 [[https://github.com/stevemolitor/claude-code.el][stevemolitor/claude-code.el]]
+
+* Installation
+在您的 ~doom!~ 配置块中启用此模块。
+
+在 =:custom-ai= 部分添加 =claude-code=：
+
+#+begin_src emacs-lisp
+(doom! ;; ...
+       :custom-ai
+       claude-code
+       ;; ...
+       )
+#+end_src
+
+此模块需要：
+- 活跃的 Claude Code 会话或 API 访问权限
+- 网络连接以与 Claude AI 服务通信
+
+* Usage
+** Global bindings
+该模块配置使用 =C-c c= 前缀来访问所有 Claude Code 命令：
+
+| 快捷键  | 描述                       |
+|---------+----------------------------|
+| [[kbd:][C-c c]]   | 打开 Claude Code 命令映射  |
+| C-c c c | 开始使用claude code        |
+| C-c c t | 打开或关闭claude所在buffer |
+* Configuration
+该模块默认使用最小配置。核心设置是：
+
+#+begin_src emacs-lisp
+(use-package! claude-code
+  :bind-keymap ("C-c c" . claude-code-command-map)
+  :config (claude-code-mode))
+#+end_src
+* Appendix
+** Related modules
+- =:custom-ai codeium= - 替代的 AI 补全服务
+- =:custom-ai gptel= - ChatGPT 集成，用于一般 AI 协助

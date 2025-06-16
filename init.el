@@ -211,6 +211,9 @@
        iedit
        choug
        fcitx
+
+       :custom-ai
        ;; codeium
        ;; gptel
+       claude-code
        )
