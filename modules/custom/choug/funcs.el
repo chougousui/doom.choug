@@ -1,23 +1,5 @@
 ;;; custom/choug/funcs.el -*- lexical-binding: t; -*-
 
-(defun choug/swiper-dwim ()
-  (interactive)
-  (swiper (if (region-active-p)
-              (buffer-substring-no-properties
-               (region-beginning)
-               (region-end))
-            (thing-at-point 'symbol)
-            ))
-  )
-
-;; (defun choug/consult-ripgrep-dwim ()
-;;   "Search with `consult-ripgrep` using the selected text or the word at the point."
-;;   (interactive)
-;;   (let ((search-term (if (use-region-p)
-;;                          (buffer-substring-no-properties (region-beginning) (region-end))
-;;                        (thing-at-point 'word t))))
-;;     (consult-ripgrep nil search-term)))
-
 ;; 基于doom自定义的+vertico/project-search改写自己的函数
 (defun choug/project-search-dwim (&optional arg initial-query directory)
   "项目内搜索，使用光标处内容或选中文本。前缀参数 ARG 用于搜索所有文件（含隐藏文件）。"
