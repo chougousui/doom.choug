@@ -203,6 +203,7 @@
        lisp-ext
        lua-ext
        go-ext
+       javascript-ext
        python-ext
        php-ext
        revert-whitespace

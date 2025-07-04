@@ -1,0 +1,22 @@
+#+title: :custom javascript-ext
+
+* Description
+扩展JavaScript/TypeScript开发配置，集成Biome LSP服务器。
+
+* Features
+- 集成 =lsp-biome= 包，提供现代JavaScript/TypeScript语言服务
+- 自动保存时格式化代码 (=lsp-biome-format-on-save=)
+- 自动保存时修复代码问题 (=lsp-biome-autofix-on-save=)
+- 自动保存时整理导入 (=lsp-biome-organize-imports-on-save=)
+
+* Configuration
+所有配置选项默认启用：
+- =lsp-biome-organize-imports-on-save= = t
+- =lsp-biome-autofix-on-save= = t
+- =lsp-biome-format-on-save= = t
+
+* Dependencies
+需要全局或项目中安装biome工具
+#+begin_src bash
+npm install @biomejs/biome
+#+end_src
