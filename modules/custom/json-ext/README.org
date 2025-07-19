@@ -1,0 +1,8 @@
+#+title: :custom json-ext
+
+* Description
+扩展JSON文件的模式配置，确保JSONC文件使用正确的编辑模式。
+
+* Features
+- 为 =.jsonc= 文件自动启用 =jsonc-mode=
+- 为常见的实质jsonc配置文件（如 =tsconfig.json=、=jsconfig.json=、=.vscode/*.json=）启用 =jsonc-mode=

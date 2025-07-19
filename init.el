@@ -204,6 +204,7 @@
        lua-ext
        go-ext
        javascript-ext
+       json-ext
        python-ext
        php-ext
        revert-whitespace
