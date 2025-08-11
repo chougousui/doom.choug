@@ -9,6 +9,11 @@
    ;; 通常是选择第一个,极少数情况会不选择第一个
    corfu-preselect 'valid
 
+   ;; 防止删除字符时触发补全 - 移除删除相关命令
+   ;; 默认corfu-auto-commands包含delete-backward-char等删除命令
+   ;; 只保留插入字符时触发补全
+   corfu-auto-commands '("self-insert-command\\'")
+
    ;; 同样是indent-for-tab-command,
    ;; spacemacs下对于已经打好的内容,光标放在后面按下tab不会补全,是正常行为(要么调整该行缩进,要么不做什么)
    ;; 但是doom放在后面,会补全
