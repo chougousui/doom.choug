@@ -207,6 +207,7 @@
        json-ext
        python-ext
        php-ext
+       zig-ext
        dart-ext
        revert-whitespace
        modeline-ext
