@@ -5,4 +5,6 @@
         lsp-enable-on-type-formatting t    ;; 打字时就允许格式化
         lsp-before-save-edits t            ;; ?暂时不清楚意图
         lsp-headerline-breadcrumb-enable t ;; 在headerline显示面包屑
-        ))
+        )
+  (setq lsp-imenu-sort-methods '(kind position)) ;; lsp-ui-imenu出现后的排序
+  )
