@@ -79,8 +79,8 @@
                                    (lambda ()
                                      (let ((exec (lsp-kotlin-official--executable)))
                                        (if (eq system-type 'windows-nt)
-                                           exec
-                                         (list "bash" exec)))))
+                                           (list exec "--socket" "127.0.0.1:0")
+                                         (list "bash" exec "--socket" "127.0.0.1:0")))))
                   :activation-fn (lsp-activate-on "kotlin")
                   :major-modes '(kotlin-mode kotlin-ts-mode)
                   :priority 10 ;; 确保优先级高于其他 kotlin lsp
