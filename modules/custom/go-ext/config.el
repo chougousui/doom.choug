@@ -31,3 +31,6 @@
 
 ;; 打开go.mod文件时希望不要显示行号
 (add-hook! 'go-dot-mod-mode-hook #'display-line-numbers-mode)
+
+(after! go-ts-mode
+  (setq go-ts-mode-indent-offset 4))
