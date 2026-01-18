@@ -105,3 +105,11 @@
 ;; 并且设置一个喜欢的颜色来显示
 (setq-default show-trailing-whitespace t)  ;; 一个emacs内置的变量,不依赖包
 (custom-set-faces! '(trailing-whitespace :background "#2aa1ae"))
+
+;; 禁用projectile缓存,fd已经足够快,而且能适配外部创建文件的场景(AI生成了新文件)
+(after! projectile
+  (setq projectile-enable-caching nil)
+  (setq projectile-indexing-method 'alien)
+  (setq projectile-git-use-fd t)
+  ;; -0 projectile期望以"\0"作为不同文件名的分隔符,因为有可能文件名中含有空格,换行等
+  (setq projectile-generic-command "fd . -0 --type f --color=never --hidden"))
