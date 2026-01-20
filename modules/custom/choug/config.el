@@ -113,3 +113,6 @@
   (setq projectile-git-use-fd t)
   ;; -0 projectile期望以"\0"作为不同文件名的分隔符,因为有可能文件名中含有空格,换行等
   (setq projectile-generic-command "fd . -0 --type f --color=never --hidden"))
+
+;; 发现emacs31默认打开editorconfig用的模式是 utf-8-undecided, 无效编码
+(setf (alist-get "/\\.editorconfig\\'" auto-coding-alist nil nil #'equal) 'utf-8)
