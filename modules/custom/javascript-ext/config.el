@@ -26,3 +26,8 @@
                    (unless (boundp 'apheleia-formatters)
                      (require 'apheleia))
                    (apheleia-mode 1))))
+
+;; oxlint LSP 集成
+;; 在检测到 .oxlintrc.json 的时候会自动启动
+(after! lsp-mode
+  (load! "lsp-oxlint"))
