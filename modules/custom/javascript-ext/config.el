@@ -15,7 +15,7 @@
   :config
   (setq lsp-biome-organize-imports-on-save t
         lsp-biome-autofix-on-save t
-        lsp-biome-format-on-save t)
+        lsp-biome-format-on-save nil)   ;; 可能与apheleia中的biome格式化工具冲突
   (add-to-list 'lsp-biome-active-file-types (rx "." (or "sass" "scss") eos)))
 
 ;; lsp-biome 的激活函数依赖 apheleia-formatters 变量存在
@@ -31,3 +31,6 @@
 ;; 在检测到 .oxlintrc.json 的时候会自动启动
 (after! lsp-mode
   (load! "lsp-oxlint"))
+
+;; 根据项目配置文件动态选择格式化器
+(load! "formatter-detect")
