@@ -1,100 +1,92 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+为 Claude Code 提供的项目指南。
 
-## Overview
+## 概述
 
-This is a personal Doom Emacs configuration repository. Doom Emacs is a highly configurable Emacs framework that provides a modern, efficient editing environment with extensive customization options.
+Doom Emacs 个人配置仓库，使用 Emacs 默认键绑定风格（非 Evil 模式）。
 
-## Key Commands
+## 常用命令
 
-### Doom Emacs Management
-- `doom sync` - Synchronize packages after modifying `init.el` or `packages.el`
-- `doom upgrade` - Update Doom Emacs and packages
-- `doom doctor` - Diagnose configuration issues
-- `doom purge` - Clean up orphaned packages
-- `doom reload` - Reload Doom configuration (or use `M-x doom/reload`)
+- `doom sync` - 修改 `init.el` 或 `packages.el` 后同步包
+- `doom doctor` - 诊断配置问题
+- `M-x doom/reload` - 实时重载配置
 
-### Development Workflow
-- No specific build/test commands - this is an Emacs configuration
-- Configuration changes are applied via `doom sync` followed by Emacs restart
-- Use `M-x doom/reload` for live configuration reloading when possible
+## 项目结构
 
-## Architecture
+```
+.
+├── init.el          # 模块启用配置
+├── config.el        # 全局个人配置（主题等）
+├── packages.el      # 全局包声明
+└── modules/
+    ├── custom/      # 功能扩展模块
+    └── custom-ai/   # AI 集成模块
+```
 
-### Core Configuration Files
-- `init.el` - Main module configuration defining which Doom modules are enabled
-- `config.el` - Personal configuration and customizations  
-- `packages.el` - Package declarations and customizations
+## 配置归属
 
-### Module System
-The configuration uses Doom's modular architecture with two custom module categories:
+### 全局配置 (`config.el`, `packages.el`)
 
-#### `:custom` modules (in `modules/custom/`)
-Core functionality extensions:
-- `choug` - Personal defaults and key bindings, includes swiper integration
-- `corfu-ext` - Completion UI extensions  
-- `vertico-ext` - Search/selection UI extensions
-- `lsp-ext` - LSP enhancements
-- `modeline-ext` - Status line customizations
-- Language-specific extensions: `go-ext`, `python-ext`, `php-ext`, `lua-ext`, `lisp-ext`
-- UI extensions: `doom-dashboard-ext`, `syntax-ext`
-- Utility modules: `fnm`, `fcitx`, `iedit`, `plantuml-ext`, `revert-whitespace`
+| 配置项 | 文件 |
+|--------|------|
+| spacemacs-theme 主题 | `packages.el`, `config.el` |
+| 禁用 ws-butler | `packages.el` |
+| 行号显示、org-directory | `config.el` |
 
-#### `:custom-ai` modules (in `modules/custom-ai/`)
-AI integration modules:
-- `claude-code` - Claude Code integration with `C-c c` prefix bindings
-- `codeium` - AI code completion
-- `gptel` - ChatGPT integration (currently commented out)
+### `:custom` 模块
 
-### Language Support
-Configured with LSP and tree-sitter for:
-- Go (`+lsp +tree-sitter`)
-- Python (`+lsp +pyright +tree-sitter`) 
-- JavaScript (`+lsp +tree-sitter`)
-- Rust (`+lsp +tree-sitter`)
-- Java (`+lsp +tree-sitter`)
-- PHP (`+lsp +tree-sitter`)
-- Lua (`+lsp +tree-sitter`)
-- JSON, YAML, Web (`+lsp +tree-sitter`)
-- Zig (`+lsp +tree-sitter`)
-- Dart/Flutter (`+flutter +lsp`)
+| 模块 | 管理的配置 |
+|------|-----------|
+| `choug` | 字体(JetBrains Mono + 楷体)、Leader 键(M-m)、projectile、auto-revert、trailing-whitespace |
+| `corfu-ext` | Corfu 补全 UI |
+| `vertico-ext` | Vertico 搜索 UI |
+| `lsp-ext` | LSP 通用配置：headerline 面包屑、文件监控阈值 |
+| `fnm` | Node.js 版本管理 |
+| `go-ext` | Go：golines 格式化器(gofumpt, 120字符)、go-ts-mode 缩进 |
+| `javascript-ext` | JS/TS：lsp-biome、lsp-oxlint、apheleia、缩进设置 |
+| `python-ext` | Python：ruff 格式化、pyvenv 自动激活 .venv |
+| `php-ext` | PHP 语言配置 |
+| `lua-ext` | Lua 语言配置 |
+| `zig-ext` | Zig 语言配置 |
+| `dart-ext` | Dart/Flutter 配置 |
+| `json-ext` | JSON 配置 |
+| `lisp-ext` | Emacs Lisp 配置 |
+| `doom-dashboard-ext` | 启动仪表板 |
+| `modeline-ext` | 模式行定制 |
+| `syntax-ext` | 语法高亮 |
+| `plantuml-ext` | PlantUML 配置 |
+| `iedit` | 多光标编辑 |
+| `fcitx` | 输入法切换 |
+| `revert-whitespace` | 空白字符处理 |
 
-## Module Structure
+### `:custom-ai` 模块
 
-Each custom module follows Doom's convention:
-- `config.el` - Module configuration code
-- `packages.el` - Package declarations (if needed)
-- `README.org` - Module documentation
-- Additional files as needed (e.g., `funcs.el`, `segments.el`)
+| 模块 | 状态 | 管理的配置 |
+|------|------|-----------|
+| `claude-code` | 启用 | claude-code 包集成 |
+| `codeium` | 禁用 | AI 代码补全 |
+| `gptel` | 禁用 | ChatGPT 集成 |
 
-## Key Customizations
+### 语言模块 (`init.el` 中启用)
 
-### Theme and UI
-- Uses `spacemacs-dark` theme
-- Disabled `ws-butler` package due to conflicts with formatters
-- Corfu completion with orderless matching
-- Vertico for minibuffer completion
-- Custom dashboard and modeline extensions
+启用 LSP + Tree-sitter：Go、Python(+uv)、JavaScript、Rust、Java、PHP、Lua、JSON、YAML、Web、Zig、Dart(+flutter)
 
-### Claude Code Integration
-- Bound to `C-c c` prefix for all Claude Code commands
-- Key bindings:
-  - `C-c c c` - Start claude code
-  - `C-c c t` - Toggle claude buffer
+已禁用：Kotlin
 
-### Development Features  
-- LSP enabled for most languages
-- Tree-sitter for enhanced syntax highlighting
-- Format on save enabled
-- Syntax checking enabled
-- Git integration via vc-gutter
+## 模块文件结构
 
-## Making Changes
+```
+modules/custom/example/
+├── .doommodule      # 模块标识
+├── config.el        # 模块配置
+├── packages.el      # 包声明（可选）
+└── README.org       # 文档（可选）
+```
 
-1. Modify relevant configuration files (`init.el`, `config.el`, `packages.el`, or module files)
-2. Run `doom sync` to synchronize changes
-3. Restart Emacs or use `M-x doom/reload` for some changes
-4. Use `doom doctor` to diagnose any issues
+## 修改配置
 
-When adding new packages, declare them in `packages.el` or the relevant module's `packages.el` file, then run `doom sync`.
+1. 确定配置归属的模块
+2. 修改对应模块的 `config.el` 或 `packages.el`
+3. 运行 `doom sync`
+4. 重启 Emacs
