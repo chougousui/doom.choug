@@ -116,3 +116,6 @@
 
 ;; 发现emacs31默认打开editorconfig用的模式是 utf-8-undecided, 无效编码
 (setf (alist-get "/\\.editorconfig\\'" auto-coding-alist nil nil #'equal) 'utf-8)
+
+;; 全局开启行号显示
+(global-display-line-numbers-mode 1)
