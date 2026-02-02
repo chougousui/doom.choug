@@ -210,6 +210,7 @@
        zig-ext
        dart-ext
        ;; kotlin-ext
+       hurl
        revert-whitespace
        modeline-ext
        plantuml-ext
