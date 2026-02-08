@@ -29,5 +29,7 @@
 (dolist (hook '(typescript-ts-mode-hook
                 tsx-ts-mode-hook
                 js-ts-mode-hook
-                typescript-mode-hook))
+                typescript-mode-hook
+                web-mode-hook
+                css-mode-hook))
   (add-hook hook #'my/set-js-formatter-h))
