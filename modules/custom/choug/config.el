@@ -119,3 +119,7 @@
 
 ;; 全局开启行号显示
 (global-display-line-numbers-mode 1)
+
+;; scratch使用org-mode作为默认
+(setq doom-scratch-initial-major-mode 'org-mode)
+(setq initial-major-mode 'org-mode)
