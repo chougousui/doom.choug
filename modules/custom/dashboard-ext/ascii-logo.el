@@ -1,4 +1,4 @@
-;;; custom/doom-dashboard-ext/ascii-logo.el -*- lexical-binding: t; -*-
+;;; custom/dashboard-ext/ascii-logo.el -*- lexical-binding: t; -*-
 
 ;; (defconst +my-dashboard-banner
 ;;   '("██████╗  ██████╗  ██████╗ ███╗   ███╗"
