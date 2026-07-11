@@ -1,25 +1,6 @@
 ;;; custom/php-ext/config.el -*- lexical-binding: t; -*-
 
-(defun php-ext/need-cautious-formatting ()
-  "判断当前文件是否需要谨慎格式化。
-通过执行 `git cautious path/to/file` 判断：
-- 返回状态码 0，表示需要谨慎格式化，返回 t；
-- 返回其他状态码或命令执行失败，返回 nil。
-"
-  ;; (interactive)
-  (let* ((exit-code (call-process "git" nil nil nil "cautious" (buffer-file-name))))
-    ;; (message "git cautious exit code: %d" exit-code) ;; debug时可查看
-    (= exit-code 0)))
-
-;; 在特定条件下禁用apheleia-mode
-(defun php-ext/inhibit-apheleia-f ()
-  (and (eq major-mode 'php-mode)                   ;; 如果是php-mode
-       (php-ext/need-cautious-formatting)))        ;; 且借助git alias判定需要谨慎格式化, 则禁用apheleia-mode
-
 (after! apheleia
-  ;; apheleia没有给变量设置autoload,必须在包加载后才能操作其变量
-  (add-to-list 'apheleia-inhibit-functions #'php-ext/inhibit-apheleia-f)
-
   ;; 添加prettier格式化器
   (add-to-list 'apheleia-formatters
                '(prettier-php . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
