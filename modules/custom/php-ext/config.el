@@ -11,20 +11,15 @@
     ;; (message "git cautious exit code: %d" exit-code) ;; debug时可查看
     (= exit-code 0)))
 
-(use-package! apheleia
-  :defer t
-  :init
-  ;; 在特定条件下禁用apheleia-mode
-  (defun php-ext/inhibit-apheleia-f ()
-    (and (eq major-mode 'php-mode)                   ;; 如果是php-mode
-         (php-ext/need-cautious-formatting)))        ;; 且借助git alias判定需要谨慎格式化, 则禁用apheleia-mode
-
-  ;; 为方便提前定义functions的内容,apheleia autoload了这个变量
-  ;; 作为占位符功能,不会在包初始化前抛出变量未定义的问题
-  (add-to-list 'apheleia-inhibit-functions #'php-ext/inhibit-apheleia-f)
-  )
+;; 在特定条件下禁用apheleia-mode
+(defun php-ext/inhibit-apheleia-f ()
+  (and (eq major-mode 'php-mode)                   ;; 如果是php-mode
+       (php-ext/need-cautious-formatting)))        ;; 且借助git alias判定需要谨慎格式化, 则禁用apheleia-mode
 
 (after! apheleia
+  ;; apheleia没有给变量设置autoload,必须在包加载后才能操作其变量
+  (add-to-list 'apheleia-inhibit-functions #'php-ext/inhibit-apheleia-f)
+
   ;; 添加prettier格式化器
   (add-to-list 'apheleia-formatters
                '(prettier-php . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
