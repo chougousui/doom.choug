@@ -1,4 +1,5 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; custom/fcitx/packages.el
 
-(package! fcitx)
+(when IS-LINUX
+  (package! fcitx))
