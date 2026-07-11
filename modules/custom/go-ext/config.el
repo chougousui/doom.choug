@@ -5,12 +5,24 @@
   (add-to-list 'apheleia-formatters
                '(golines . ("golines" "-m" "120" "--base-formatter=gofumpt")))
 
+  ;; 添加gci格式化器,用于整理import顺序
+  (add-to-list 'apheleia-formatters
+               '(gci . ("gci" "print"
+                        "--custom-order"
+                        "-s" "standard"
+                        "-s" "localmodule"
+                        "-s" "default")))
+
   ;; 设置go的默认格式化器为golines(apheleia-mode-alist并非autoload,只能在启动后操作)
   (setf (alist-get 'go-mode apheleia-mode-alist) 'golines)
   (setf (alist-get 'go-ts-mode apheleia-mode-alist) 'golines)
+
+  ;; ;; 如需在go-mode下依次使用gofumpt和gci,改用以下格式化工具链:
+  ;; (setf (alist-get 'go-mode apheleia-mode-alist) '(gofumpt gci))
+  ;; (setf (alist-get 'go-ts-mode apheleia-mode-alist) '(gofumpt gci))
   )
 
-;; 提供一个交互式命令来特定使用golines
+;; 提供一个交互式命令,让用户主动选择使用golines格式化工具,来手动格式化当前buffer
 ;;
 ;; apheleia-mode是autoload的,意味着用户第一次打开文件,在modes中看到apheleia-mode,但实际上包还没有加载
 ;; 上面的after中的内容也还没有加载
@@ -29,8 +41,10 @@
   (interactive)
   (apheleia-format-buffer 'golines))
 
-;; 打开go.mod文件时希望不要显示行号
-(add-hook! 'go-dot-mod-mode-hook #'display-line-numbers-mode)
+;; 打开go.mod文件时希望显示行号
+(add-hook 'go-dot-mod-mode-hook
+          (lambda ()
+            (display-line-numbers-mode 1)))
 
 (after! go-ts-mode
   (setq go-ts-mode-indent-offset 4))
