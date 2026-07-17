@@ -211,6 +211,7 @@
        dart-ext
        ;; kotlin-ext
        hurl
+       just
        revert-whitespace
        modeline-ext
        plantuml-ext
