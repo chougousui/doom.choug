@@ -218,6 +218,7 @@
        iedit
        choug
        fcitx
+       ;; diff
 
        :custom-ai
        ;; codeium

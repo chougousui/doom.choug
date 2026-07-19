@@ -1,0 +1,12 @@
+#+title: :custom diff
+
+* Description
+安装并配置 [[https://github.com/pkryger/difftastic.el][difftastic.el]]。
+
+* Prerequisites
+需要在 =PATH= 中提供 =difft= 命令。
+
+* Usage
+- =M-x difftastic-files=：比较两个文件。
+- =M-x difftastic-buffers=：比较两个缓冲区。
+- =M-x difftastic-dired-diff=：在 Dired 中比较文件。
