@@ -83,6 +83,7 @@
 ;; 附加一些常用按键
 (map! :prefix "M-RET"
       "g g" #'+lookup/definition
+      "g G" #'+lookup/references
       )
 
 ;; 删除快捷键
