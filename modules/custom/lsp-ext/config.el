@@ -8,3 +8,8 @@
         )
   (setq lsp-imenu-sort-methods '(kind position)) ;; lsp-ui-imenu出现后的排序
   )
+
+(when (modulep! :tools lsp +eglot)
+  (use-package! breadcrumb
+    :config
+    (breadcrumb-mode 1)))
