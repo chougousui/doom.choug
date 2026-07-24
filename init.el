@@ -201,6 +201,7 @@
        dashboard-ext
        lsp-ext
        syntax-ext
+       format-ext
        lisp-ext
        lua-ext
        go-ext

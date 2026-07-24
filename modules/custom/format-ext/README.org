@@ -1,0 +1,4 @@
+#+title: :custom format-ext
+
+* Description
+将Apheleia中Oxfmt支持且默认使用Prettier的major mode切换为Oxfmt。
