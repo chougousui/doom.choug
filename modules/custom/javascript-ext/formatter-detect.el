@@ -31,5 +31,6 @@
                 js-ts-mode-hook
                 typescript-mode-hook
                 web-mode-hook
+                html-mode-hook
                 css-mode-hook))
   (add-hook hook #'my/set-js-formatter-h))
