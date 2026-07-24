@@ -193,6 +193,7 @@
        (default +bindings +smartparens)
 
        :custom
+       (:if (featurep :system 'linux) fcitx)
        ;; company-ext
        corfu-ext
        vertico-ext
@@ -217,7 +218,6 @@
        plantuml-ext
        iedit
        choug
-       fcitx
        ;; diff
        calendar-ext
 
