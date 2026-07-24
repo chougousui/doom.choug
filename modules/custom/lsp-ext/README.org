@@ -1,5 +1,16 @@
 #+title: :custom lsp-ext
 
 * Description
-自定义一下lsp相关参数,doom emacs在这方面到底是如何想的,
-是希望用户直接在$DOOMDIR/config.el中配置吗?
+集中管理Eglot和lsp-mode相关配置。
+
+* lsp-mode
+- 配置文件监控、输入时格式化、保存前编辑和breadcrumb参数
+- =biome-lsp-mode.el= 直接注册Biome LSP，仅在项目包含 =biome.json= 或 =biome.jsonc= 时启动
+- =oxlint-lsp-mode.el= 集成Oxlint LSP，仅在项目包含 =.oxlintrc.json= 或 =.oxlintrc.jsonc= 时启动
+
+* Eglot
+- 注册JavaScript、TypeScript和Web语言服务器
+- 启用 =breadcrumb-mode=
+
+* Dependencies
+Biome LSP需要确保 =biome= 命令位于Emacs的 =exec-path=。

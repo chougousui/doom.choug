@@ -9,28 +9,5 @@
       css-indent-offset 2
       )
 
-;; lsp-biome在检测到 biome.json(c) 的时候会启动
-(use-package! lsp-biome
-  :after lsp-mode
-  :config
-  (setq lsp-biome-organize-imports-on-save t
-        lsp-biome-autofix-on-save t
-        lsp-biome-format-on-save nil)   ;; 可能与apheleia中的biome格式化工具冲突
-  (add-to-list 'lsp-biome-active-file-types (rx "." (or "sass" "scss") eos)))
-
-;; lsp-biome 的激活函数依赖 apheleia-formatters 变量存在
-;; 但不巧的是 apheleia 不知道什么原因没有给它设置autoload
-;; 不得不完整加载 apheleia
-(dolist (hook '(web-mode-hook typescript-mode-hook js2-mode-hook css-mode-hook))
-  (add-hook hook (lambda ()
-                   (unless (boundp 'apheleia-formatters)
-                     (require 'apheleia))
-                   (apheleia-mode 1))))
-
-;; oxlint LSP 集成
-;; 在检测到 .oxlintrc.json 的时候会自动启动
-(after! lsp-mode
-  (load! "lsp-oxlint"))
-
 ;; 根据项目配置文件动态选择格式化器
 (load! "formatter-detect")

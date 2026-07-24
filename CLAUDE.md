@@ -56,11 +56,11 @@ Leader 键改为 `M-m`。仓库无构建系统、无测试框架。
 **LSP 处于 lsp-mode → eglot 的迁移中**（见 commit `9149d25`、`8dd6666`）。`init.el` 现为 `(lsp +eglot +booster)`，
 但 `lsp-ext/config.el` 里 `after! lsp-mode` 那段旧配置仍保留、当前不生效；eglot 部分在
 `(when (modulep! :tools lsp +eglot) ...)` 中用 `set-eglot-client!` 注册。
-`javascript-ext` 的 `lsp-biome`、`lsp-oxlint.el`（`lsp-register-client`）同样只在 lsp-mode 下生效。
+`lsp-ext` 的 `biome-lsp-mode.el`、`oxlint-lsp-mode.el`（`lsp-register-client`）同样只在 lsp-mode 下生效。
 新增语言服务器时先确认目标是哪一侧，不要混改。
 
 **函数命名前缀不统一**，跟随所在模块即可：`choug/`、`+calendar-ext--`、`my/`（`javascript-ext`）、
-`lsp-oxlint--`、`custom-modeline-ext/`、`lisp-ext/`。
+`oxlint--`、`custom-modeline-ext/`、`lisp-ext/`。
 
 ### 全局文件的边界
 
@@ -79,7 +79,7 @@ Leader 键改为 `M-m`。仓库无构建系统、无测试框架。
 | 自定义交互命令（搜索、删词、对齐注释、合并行） | `choug/funcs.el` |
 | eglot 客户端注册、breadcrumb、lsp-mode 遗留设置 | `lsp-ext` |
 | JS/TS 格式化器按项目配置文件动态选择（oxfmt > biome > prettier） | `javascript-ext/formatter-detect.el` |
-| oxlint LSP 客户端 | `javascript-ext/lsp-oxlint.el` |
+| oxlint LSP 客户端 | `lsp-ext/oxlint-lsp-mode.el` |
 | 撤销 Doom 上游对 whitespace 的定制 | `revert-whitespace` |
 | doom-modeline 显示项排布 | `modeline-ext` |
 | 农历与中日节假日 ICS 数据源 | `calendar-ext/lunar.el`、`calendar-ext/sources.el` |
