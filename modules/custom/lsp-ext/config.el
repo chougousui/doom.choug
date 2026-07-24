@@ -14,8 +14,7 @@
 (when (modulep! :tools lsp +eglot)
   ;; TypeScript 7.0 内置了原生LSP Server, tsc --lsp --stdio,其他保持eglot-server-programs里面的其他默认值
   (set-eglot-client!
-   '((js-mode :language-id "javascript")
-     (js-ts-mode :language-id "javascript")
+   '((js-ts-mode :language-id "javascript")
      (tsx-ts-mode :language-id "typescriptreact")
      (typescript-ts-mode :language-id "typescript")
      (typescript-mode :language-id "typescript"))
@@ -28,6 +27,14 @@
    '(web-mode :language-id "html")
    '("vscode-html-language-server" "--stdio")
    '("html-languageserver" "--stdio"))
+
+  ;; json-mode派生自js-mode,将Eglot已有的JSON客户端移到JavaScript客户端之前
+  (after! eglot
+    (when-let ((client
+                (assoc '(js-json-mode json-mode json-ts-mode jsonc-mode)
+                       eglot-server-programs)))
+      (setq eglot-server-programs
+            (cons client (delq client eglot-server-programs)))))
 
   ;; Eglot没有内置breadcrumb,启用Eglot作者提供的第三方包
   (use-package! breadcrumb
