@@ -12,8 +12,6 @@
                    '(typescript-ts-base-mode
                      typescript-mode
                      js-base-mode
-                     js2-mode
-                     js3-mode
                      json-mode
                      json-ts-mode
                      css-mode

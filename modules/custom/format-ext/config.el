@@ -8,7 +8,6 @@
                     graphql-mode
                     html-mode
                     html-ts-mode
-                    js3-mode
                     js-json-mode
                     js-mode
                     js-ts-mode
