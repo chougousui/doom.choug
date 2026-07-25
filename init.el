@@ -197,7 +197,6 @@
        ;; company-ext
        corfu-ext
        vertico-ext
-       fnm
        dashboard-ext
        lsp-ext
        syntax-ext
