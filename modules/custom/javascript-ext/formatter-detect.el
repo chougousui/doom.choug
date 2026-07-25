@@ -5,10 +5,10 @@
 (defvar my/js-formatter-config-files
   '((oxfmt . (".oxfmtrc.json" ".oxfmtrc.jsonc"))
     (biome . ("biome.json" "biome.jsonc"))
-    (prettier-typescript . (".prettierrc" ".prettierrc.json" ".prettierrc.yaml"
-                            ".prettierrc.yml" ".prettierrc.js" "prettier.config.js"
-                            ".prettierrc.cjs" "prettier.config.cjs"
-                            ".prettierrc.mjs" "prettier.config.mjs")))
+    (prettier . (".prettierrc" ".prettierrc.json" ".prettierrc.yaml"
+                 ".prettierrc.yml" ".prettierrc.js" "prettier.config.js"
+                 ".prettierrc.cjs" "prettier.config.cjs"
+                 ".prettierrc.mjs" "prettier.config.mjs")))
   "格式化器及其配置文件的映射，按优先级排序")
 
 (defun my/detect-js-formatter ()
