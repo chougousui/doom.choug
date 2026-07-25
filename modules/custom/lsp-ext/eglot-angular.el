@@ -1,11 +1,22 @@
 ;;; custom/lsp-ext/eglot-angular.el -*- lexical-binding: t; -*-
 
-;; TODO: 给Angular项目下的ts文件注册一个调用ngserver的Eglot客户端,
-;; 作为TypeScript客户端之外的追加项,不覆盖它。
-
 (defun lsp-ext/angular-project-p (project)
-  "PROJECT是Angular项目时返回非nil,判断依据是根目录下有`angular.json'。
-PROJECT是`project-current'返回的对象,可能为nil。"
+  "判断是否为angular项目"
   (and project
        (file-exists-p
         (expand-file-name "angular.json" (project-root project)))))
+
+(defun lsp-ext/angular-server-command (project)
+  "构造启动angular-lsp的命令行字符串"
+  (list "ngserver"
+        "--stdio"
+        "--tsProbeLocations"
+        (expand-file-name "node_modules" (project-root project))
+        "--ngProbeLocations"
+        (expand-file-name
+         "~/.local/share/mise/installs/node/lts/lib/node_modules")))
+
+(defun lsp-ext/angular-server-alternatives (project)
+  "根据情况构造可用lsp列表,如果是angular项目,则返回[ngserver],否则返回[]"
+  (when (lsp-ext/angular-project-p project)
+    (list (lsp-ext/angular-server-command project))))

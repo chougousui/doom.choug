@@ -10,25 +10,45 @@
 
 (load! "biome-lsp-mode")
 (load! "oxlint-lsp-mode")
-(load! "eglot-typescript")
 (load! "eglot-angular")
+(load! "eglot-typescript")
 
 (when (modulep! :tools lsp +eglot)
-  ;; TypeScript 7.0 内置了原生LSP Server, tsc --lsp --stdio,其他保持eglot-server-programs里面的其他默认值
+  ;; JavaScript和TSX文件不会属于Angular项目,不需要动态选择客户端
   (set-eglot-client!
    '((js-ts-mode :language-id "javascript")
-     (tsx-ts-mode :language-id "typescriptreact")
-     (typescript-ts-mode :language-id "typescript")
-     (typescript-mode :language-id "typescript"))
-   '("tsc" "--lsp" "--stdio")
-   '("rass ts")
-   '("typescript-language-server" "--stdio"))
+     (tsx-ts-mode :language-id "typescriptreact"))
+   (lambda (interactive-p)
+     (funcall
+      (eglot-alternatives
+       (lsp-ext/typescript-server-alternatives))
+      interactive-p)))
 
-  ;; 让web-mode使用与html-mode相同的语言服务器,并发送正确的languageId
+  ;; TypeScript 7.0内置了原生LSP Server; Angular项目使用ngserver作为备选客户端
   (set-eglot-client!
-   '(web-mode :language-id "html")
-   '("vscode-html-language-server" "--stdio")
-   '("html-languageserver" "--stdio"))
+   '((typescript-ts-mode :language-id "typescript")
+     (typescript-mode :language-id "typescript"))
+   (lambda (interactive-p project)
+     (funcall
+      (eglot-alternatives
+       (append
+        (lsp-ext/typescript-server-alternatives)
+        (lsp-ext/angular-server-alternatives project)))
+      interactive-p project)))
+
+  ;; HTML文件优先使用完整的HTML语言服务器; Angular项目将ngserver作为备选客户端
+  (set-eglot-client!
+   '((html-mode :language-id "html")
+     (html-ts-mode :language-id "html")
+     (web-mode :language-id "html"))
+   (lambda (interactive-p project)
+     (funcall
+      (eglot-alternatives
+       (append
+        '(("vscode-html-language-server" "--stdio")
+          ("html-languageserver" "--stdio"))
+        (lsp-ext/angular-server-alternatives project)))
+      interactive-p project)))
 
   ;; json-mode派生自js-mode,将Eglot已有的JSON客户端移到JavaScript客户端之前
   (after! eglot
