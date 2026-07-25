@@ -10,6 +10,8 @@
 
 (load! "biome-lsp-mode")
 (load! "oxlint-lsp-mode")
+(load! "eglot-typescript")
+(load! "eglot-angular")
 
 (when (modulep! :tools lsp +eglot)
   ;; TypeScript 7.0 内置了原生LSP Server, tsc --lsp --stdio,其他保持eglot-server-programs里面的其他默认值
