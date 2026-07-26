@@ -19,3 +19,11 @@ tsc版本大于等于7: 返回[tsc, typescript-language-server]
      (when (and major-version (>= major-version 7))
        (list (list tsc "--lsp" "--stdio")))
      '(("typescript-language-server" "--stdio")))))
+
+;; overwrite: 固定使用TypeScript 7自带的LSP Server
+(defun lsp-ext/typescript-server-alternatives ()
+  (list
+   (list
+    (expand-file-name "~/.local/share/mise/installs/node/lts/bin/tsc")
+    "--lsp"
+    "--stdio")))
