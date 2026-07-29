@@ -194,6 +194,7 @@
 
        :custom
        (:if (featurep :system 'linux) fcitx)
+       ;; qwerty2workman
        ;; company-ext
        corfu-ext
        vertico-ext

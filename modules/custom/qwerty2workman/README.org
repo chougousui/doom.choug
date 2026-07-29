@@ -1,0 +1,32 @@
+#+title: :custom qwerty2workman
+
+* 模块目的
+1. 用户已经长期使用 Workman 布局，快捷键也已调试为符合个人习惯的 Workman 绑定。
+2. 企业 Windows 工作电脑不允许修改系统键盘布局，因此通常通过输出 Workman 布局的外接键盘工作。
+3. 在无法使用外接键盘时，电脑内置键盘仍然输出 QWERTY；本模块仅在 Emacs 内部将这些 QWERTY 按键映射为 Workman。
+
+启用后，普通文字输入、带修饰键的输入和快捷键都会按 Workman 布局处理，使既有的 Workman 快捷键配置可以继续使用。
+
+* 原理与时间点
+模块加载时构造并安装两层按键转换：
+
+- =input-decode-map= 处理与 =BS=、=TAB=、=LFD=、=RET= 同码的 Ctrl 事件。
+- =key-translation-map= 将 QWERTY 按键事件转换为对应的 Workman 按键事件，处理大多数输入场景。
+  - 普通缓冲区输入：按 QWERTY 的 =w= 会插入 Workman 的 =d=。
+  - 单个组合键：=C-s= 等带修饰键的事件会在快捷键查找前完成转换；例如，按 =C-w= 会转换为 =C-d=，从而执行绑定到 =C-d= 的命令。
+  - 标准多键快捷键：由 keymap 定义的 =M-m a b= 仍由 =key-translation-map= 逐个转换每次按键事件。
+- =read-event=、=read-char= 和 =read-char-exclusive= 的 advice 转换命令内部直接读取的按键事件。
+  - 分阶段快捷键：前置命令已经执行，再由命令内部调用 =read-event= 等待后续按键。例如，=general-key-dispatch= 可以读取分派键
+  - 跳转工具：=avy-goto-char= 启动后调用 =read-char= 等待目标字符。例如，按 QWERTY 的 =w= 应当选择 Workman 字符 =d=。
+  - 单字符选项：Org 列表和表格排序调用 =read-char-exclusive= 读取排序方式。
+
+模块在 =init.el= 的 =:custom= 段中早于后续用户快捷键模块加载。每次按键时，转换发生在 Emacs 使用用户快捷键配置查找命令之前：
+
+#+begin_example
+QWERTY 物理按键 -> input-decode-map -> key-translation-map -> 用户快捷键查找
+#+end_example
+* 使用前提与注意
+- Emacs 29 或更高版本。
+- 使用图形 Emacs。文本终端无法区分部分 Ctrl 事件的同码按键，配置会保留这些无法安全转换的事件。
+- 操作系统键盘布局和键盘硬件输出均为 QWERTY；本模块负责在 Emacs 内转换为 Workman。
+- 用户快捷键配置已经在系统层面设置为 Workman，或键盘硬件层面输出 Workman 的电脑上适配成功。
