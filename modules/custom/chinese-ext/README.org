@@ -1,0 +1,24 @@
+#+title: :custom chinese-ext
+
+* Description
+配置 Emacs 内部使用的 Rime。
+
+Rime 用户数据目录为 =~/.config/emacs-liberime/=，其中保存自定义双拼方案、Workman 键位和词典配置。
+
+该模块依赖 =:input (chinese +rime)=。
+
+* 适用场景
+该模块适用于无法安装、修改系统输入法或调整系统键盘布局的受限电脑，使用户仍能在 Emacs 内使用熟悉的 Rime 方案、词典、双拼规则和键盘布局。
+
+- 本地电脑不允许修改输入法或其他系统配置时，可以把输入法和键盘布局限制在 Emacs 进程内，不影响系统全局设置。
+- 客户端功能简陋、服务器配置完善时，可以在服务器端 Emacs 中加载完整的 Rime 用户数据和 Emacs 键盘布局；客户端只负责传递按键。
+- 脱离外接键盘并使用系统布局受限的电脑时，可以把 Emacs 自定义键盘布局与内置 Rime 组合，在笔记本键盘上继续使用既有的键位和输入方案。
+
+例如，微软拼音允许设置自定义双拼，但如果既有双拼方案依赖 Workman 键位，而电脑又不允许修改系统键盘布局，那么仅配置微软输入法仍无法按熟悉的键位输入。此时可以把 Emacs 作为输入工具：Emacs 先应用自定义键盘布局，再由进程内 Rime 按既有双拼 schema 解析输入。
+
+* 配置
+模块在 =init.el= 中通过 =use-package-hook!= 的 =:post-init= 阶段覆盖 Doom Chinese 模块设置的 =liberime-user-data-dir=。该阶段位于 Doom 的 =use-package! liberime :init= 之后、liberime 加载之前。
+
+=packages.el= 使用 =chougousui/liberime= 的 =fix/pyim-search= 分支，并取消 Doom 的固定版本。该分支修复空候选链表释放时的崩溃，并提供 =liberime-search-context=。
+
+=config.el= 仅在 =pyim-liberime--get-code= 执行期间，让 =liberime-search= 的候选词和 preedit 来自同一个隔离搜索会话。

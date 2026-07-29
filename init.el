@@ -16,7 +16,7 @@
 
 (doom! :input
        ;;bidi              ; (tfel ot) thgir etirw uoy gnipleh
-       ;;chinese
+       (chinese +rime +childframe)
        ;;japanese
        ;;layout            ; auie,ctsrnm is the superior home row
 
@@ -194,6 +194,7 @@
 
        :custom
        (:if (featurep :system 'linux) fcitx)
+       chinese-ext
        ;; qwerty2workman
        ;; company-ext
        corfu-ext
