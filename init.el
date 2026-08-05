@@ -153,7 +153,7 @@
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
        org               ; organize your plain life in plain text
-       (php +lsp +tree-sitter)               ; perl's insecure younger brother
+       ;;(php +lsp +tree-sitter)               ; perl's insecure younger brother
        plantuml          ; diagrams for confusing people more
        ;;graphviz          ; diagrams for confusing yourself even more
        ;;purescript        ; javascript, but functional
@@ -209,7 +209,7 @@
        javascript-ext
        json-ext
        python-ext
-       php-ext
+       ;;php-ext
        zig-ext
        dart-ext
        ;; kotlin-ext
