@@ -12,7 +12,10 @@
   (dolist (buffer (buffer-list))
     (with-current-buffer buffer
       (when (local-variable-p 'pyim-punctuation-translate-p)
-        (kill-local-variable 'pyim-punctuation-translate-p)))))
+        (kill-local-variable 'pyim-punctuation-translate-p))))
+  ;; 阻止使用Tab会切换到备用schema的行为
+  (define-key pyim-mode-map [?\t] nil)
+  (define-key pyim-mode-map (kbd "TAB") nil))
 
 ;; 从 emacs-rime/liberime#74 开始，`liberime-search' 在临时会话中运行，不再改变默认输入会话。
 ;; `pyim-liberime--get-code' 仍假设 `liberime-get-preedit' 描述的是刚完成的搜索，因此可能把 nil 传给 `split-string'。

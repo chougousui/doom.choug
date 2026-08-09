@@ -195,6 +195,7 @@
        :custom
        (:if (featurep :system 'linux) fcitx)
        chinese-ext
+       (japanese +childframe)
        ;; qwerty2workman
        ;; company-ext
        corfu-ext
