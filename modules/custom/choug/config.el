@@ -124,3 +124,9 @@
 ;; scratch使用org-mode作为默认
 (setq doom-scratch-initial-major-mode 'org-mode)
 (setq initial-major-mode 'org-mode)
+
+;; 默认最大化窗口
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; windows下也默认使用LF
+(setq-default buffer-file-coding-system 'utf-8-unix)
