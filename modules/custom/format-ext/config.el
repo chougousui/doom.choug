@@ -2,6 +2,11 @@
 
 (when (modulep! :editor format)
   (after! apheleia
+    ;; 覆盖上游的inplace模式(临时文件原地重写),改用stdin管道:
+    ;; 最低要求oxfmt 0.47.0(--stdin-filepath支持嵌套配置解析与ignore匹配)
+    (setf (alist-get 'oxfmt apheleia-formatters)
+          '("apheleia-npx" "oxfmt" "--stdin-filepath" filepath))
+
     ;; 将Oxfmt支持的模式从Prettier切换为Oxfmt
     (dolist (mode '(css-mode
                     css-ts-mode

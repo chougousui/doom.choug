@@ -2,3 +2,4 @@
 
 * Description
 将Apheleia中Oxfmt支持且默认使用Prettier的major mode切换为Oxfmt。
+覆盖上游oxfmt的inplace模式为stdin模式(--stdin-filepath),按真实文件路径解析嵌套配置并匹配ignore文件,省去临时文件读写。最低要求oxfmt 0.47.0。
