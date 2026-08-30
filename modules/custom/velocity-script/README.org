@@ -1,0 +1,4 @@
+#+title: :custom velocity-script
+
+* Description
+提供对 [[https://velocity.apache.org/][Apache Velocity]] 语法的支持，即对 =.vm= 与 =.vtl= 文件提供支持，使用继承自 =web-mode= 的 =velocity-script-mode= 作为 major mode。

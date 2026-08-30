@@ -216,6 +216,7 @@
        ;; kotlin-ext
        hurl
        just
+       ;;velocity-script
        revert-whitespace
        modeline-ext
        plantuml-ext
