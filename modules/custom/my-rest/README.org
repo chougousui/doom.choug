@@ -1,0 +1,17 @@
+#+title: :custom my-rest
+
+* Description
+提供 [[https://github.com/federicotdn/verb][verb]] 作为 HTTP client。verb 是基于 org-mode 的 minor mode，用 org 标题层级组织可复用的 HTTP 请求，主机、header 等通过父标题继承。
+
+本模块在 verb 默认行为之上做了以下定制：
+
+- 定义派生自 org-mode 的 major mode =hc-mode=，启用时自动开启 =verb-mode=，并通过 =auto-mode-alist= 关联 =.ehc= 文件
+- hc-mode 过滤 org 链路继承的补全后端（=pcomplete-completions-at-point=、=yasnippet-capf=、=cape-elisp-block=）；其中 =yasnippet-capf= 会在 mode hook 结束后被 =yas-global-mode= 重新挂载，用 =yas-dont-activate-functions= 从源头阻止
+- hc-mode 加入 =cape-dabbrev= 词补全：扫描范围为显示在窗口中的 buffer（=doom-visible-buffers=），候选保留原始大小写（=dabbrev-case-replace= 置 nil）
+- JSON 响应缓冲区改用 =json-mode= 显示（verb 默认使用 =js-mode=）
+- 覆盖 =verb-mode-map= 中的按键（替换了 verb 默认的 =C-c C-r= 前缀键 =verb-command-map=）：
+
+| 按键      | 命令                                      | 行为                           |
+|-----------+-------------------------------------------+--------------------------------|
+| =C-c C-r= | =verb-send-request-on-point-display=      | 发送请求并停留在当前窗口       |
+| =C-c C-c= | =verb-send-request-on-point-other-window= | 发送请求并聚焦到 response 窗口 |
