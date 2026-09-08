@@ -8,6 +8,15 @@
 (add-to-list 'auto-mode-alist '("\\.vscode/.*\\.json\\'" . jsonc-mode))
 (add-to-list 'auto-mode-alist '("jsconfig\\.json\\'" . jsonc-mode))
 
+(after! json-ts-mode
+  (load! "functions")
+
+  (map! :map json-ts-mode-map
+        "C-c C-k" #'json-ext-delete-node
+        "C-c C-n" #'json-ext-nullify-node
+        "C-c C-p" #'json-ts-jq-path-at-point
+        "C-c C-v" #'json-ext-copy-value))
+
 ;; Doom的JSON模块没有为第三方jsonc-mode自动启动LSP
 (when (modulep! :lang json +lsp)
   (add-hook 'jsonc-mode-local-vars-hook #'lsp! 'append))
