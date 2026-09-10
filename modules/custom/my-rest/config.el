@@ -3,8 +3,13 @@
 (use-package! verb
   :demand t
   :config
-  ;; verb处理JSON响应用的是verb-handler-json,默认启用js-mode,这里改用json-mode
-  (setq verb-json-use-mode #'json-mode)
+  ;; 统一配置 Verb 的 JSON 响应模式、默认请求 Header 和空响应显示行为
+  (setq verb-json-use-mode #'json-mode
+        verb-base-headers '(("Accept" . "application/json"))
+        verb-auto-show-headers-buffer 'when-empty)
+
+  (load! "history")
+  (hc-history-init)
 
   (define-derived-mode hc-mode org-mode "HC"
     "使用 Org 和 Verb 编写及发送 HTTP 请求的 major mode"
@@ -12,11 +17,31 @@
   (add-to-list 'auto-mode-alist
                '("\\.ehc\\'" . hc-mode))
 
-  ;; 绑定一些快捷键
+  ;; C-t 仅在 hc-mode 中进入 Verb 命令 map
+  (map! :map hc-mode-map
+        :desc "Verb"
+        "C-t" verb-command-map)
+
+  ;; 进入 Verb 命令 map 后的分组快捷键
+  (map! :map verb-command-map
+        (:prefix ("r" . "request")
+         :desc "Export request draft"
+         "d" #'verb-export-request-on-point-verb
+         :desc "Send request and retain focus"
+         "r" #'verb-send-request-on-point-display
+         :desc "Send request and focus response"
+         "o" #'verb-send-request-on-point-other-window)
+        (:prefix ("v" . "variables")
+         :desc "List variables"
+         "l" #'verb-show-vars
+         :desc "Set variable"
+         "s" #'verb-set-var
+         :desc "Unset all variables"
+         "u" #'verb-unset-vars))
+
+  ;; 保留直接发送并聚焦 response 窗口的快捷键
   (map! :map verb-mode-map
-        ;; 发送请求并停留在当前窗口
-        "C-c C-r" #'verb-send-request-on-point-display
-        ;; 发送请求并聚焦到response窗口
+        :desc "Send request and focus response"
         "C-c C-c" #'verb-send-request-on-point-other-window)
 
   ;; hc-mode 派生自 org-mode,继承了 org 链路的补全后端,在请求文件里都是干扰:

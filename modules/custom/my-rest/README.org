@@ -9,9 +9,105 @@
 - hc-mode 过滤 org 链路继承的补全后端（=pcomplete-completions-at-point=、=yasnippet-capf=、=cape-elisp-block=）；其中 =yasnippet-capf= 会在 mode hook 结束后被 =yas-global-mode= 重新挂载，用 =yas-dont-activate-functions= 从源头阻止
 - hc-mode 加入 =cape-dabbrev= 词补全：扫描范围为显示在窗口中的 buffer（=doom-visible-buffers=），候选保留原始大小写（=dabbrev-case-replace= 置 nil）
 - JSON 响应缓冲区改用 =json-mode= 显示（verb 默认使用 =js-mode=）
-- 覆盖 =verb-mode-map= 中的按键（替换了 verb 默认的 =C-c C-r= 前缀键 =verb-command-map=）：
+- 所有请求默认使用 =Accept: application/json=；响应 Body 为空时自动显示响应 Header buffer
+- 通过 Emacs 内置 SQLite 将实际收到响应的请求持久化到 =$XDG_STATE_HOME/ehc/history.sqlite3=
+- 在 =hc-mode-map= 中将 =C-t= 绑定到 Verb 提供的独立前缀 map =verb-command-map=，并在 =verb-command-map= 中按 request 和 variables 分组。只有先按 =C-t= 后，=r= 和 =v= 才作为分组前缀，普通字符输入不受影响。=C-t= 只在 =hc-mode= buffer 中覆盖原有的 =transpose-chars=；=C-c C-c= 仍在 =verb-mode-map= 中直接发送请求：
 
-| 按键      | 命令                                      | 行为                           |
-|-----------+-------------------------------------------+--------------------------------|
-| =C-c C-r= | =verb-send-request-on-point-display=      | 发送请求并停留在当前窗口       |
-| =C-c C-c= | =verb-send-request-on-point-other-window= | 发送请求并聚焦到 response 窗口 |
+| 按键        | 命令                                      | 行为                                             |
+|-------------+-------------------------------------------+--------------------------------------------------|
+| =C-t r d=   | =verb-export-request-on-point-verb=       | 将构建完成的请求导出为草稿                       |
+| =C-t r r=   | =verb-send-request-on-point-display=      | 发送请求并显示 response，焦点停留在请求 buffer   |
+| =C-t r o=   | =verb-send-request-on-point-other-window= | 发送请求并聚焦到 response buffer                 |
+| =C-t v l=   | =verb-show-vars=                          | 列出当前 buffer 的全部 Verb variables            |
+| =C-t v s=   | =verb-set-var=                            | 设置或新建 Verb variable                         |
+| =C-t v u=   | =verb-unset-vars=                         | 确认后清除当前 buffer 的全部 Verb variables      |
+| =C-c C-c=   | =verb-send-request-on-point-other-window= | 与 =C-t r o= 相同                                |
+
+其中 =r= 表示 request，=v= 表示 variables，=d= 表示 draft。导出的请求会显示在新的 Verb buffer 中；检查或修改完成后，按 =C-c C-c= 批准并发送。
+
+* Request history
+模块加载时，=hc-history-init= 会递归创建 =$XDG_STATE_HOME/ehc/=，初始化 =history.sqlite3=，并将记录函数注册到 =verb-post-response-hook=。默认 XDG 路径为 =~/.local/state/ehc/history.sqlite3=。
+
+若数据库文件已存在，=hc-history-init= 会原样继续使用：仅补建缺失的表，已有记录和 =created_at= 均不重置，带时间戳的归档文件也不会被处理。=hc-history-init= 本身不检查轮转，超限的旧库要等到下一次收到响应时才轮转。
+
+=verb_history= 表保存收到响应时的 Unix 时间戳、请求方法、URL、请求与响应 Header、请求与响应 Body、响应状态、耗时和响应字节数。请求侧 Header 来自 Verb 请求规格（代码标签已求值，含 =verb-base-headers=），不包含 url.el 自动添加的 =Host=、=Content-Length= 等固定 Header；响应侧 Header 为实际收到的 Header。HTTP 4xx/5xx 会记录；DNS、TLS、连接失败等没有收到响应的请求不会记录。
+
+以下变量控制持久化行为，均隶属于 =hc= customize group：
+
+| 变量                                 | 默认值              | 行为                                                     |
+|--------------------------------------+---------------------+----------------------------------------------------------|
+| =hc-history-max-response-body-bytes= | =1000000=           | 响应 Body 严格超过此字节数时不保存 Body                  |
+| =hc-history-redacted-header-names=   | 六个常见认证 Header | Header 名称忽略大小写匹配，命中后将值保存为 =[REDACTED]= |
+| =hc-history-max-database-age-days=   | =30=                | 收到响应时检查，活动数据库超过此天数后轮转               |
+| =hc-history-max-database-size-bytes= | =50000000=          | 收到响应时检查，活动数据库超过此字节数后轮转             |
+
+超过 Body 上限的记录仍保存原始响应字节数，并通过 =response_body_omitted= 区分“因超限省略”和“响应本来为空”。请求与响应 Header 以 =Key: Value= 文本保存，每行一条，因此重复 Header 和原始顺序不会丢失。
+
+=hc-history-redacted-header-names= 的默认值包含以下六个 Header：
+
+- =Authorization=
+- =Proxy-Authorization=
+- =Cookie=
+- =Set-Cookie=
+- =X-API-Key=
+- =API-Key=
+
+轮转检查在每次收到响应后执行：先关闭活动数据库，将其重命名为 =history-YYYYMMDDTHHMMSSZ.sqlite3=，创建新的 =history.sqlite3=，触发轮转的当前请求作为新数据库的第一条记录写入。同一秒内出现重名时会增加数字后缀。模块不会删除、压缩或限制归档文件，归档由用户手动管理。
+
+** 命令行查询
+数据库是标准 SQLite 文件，可直接用 =sqlite3= 查询活动库或归档：
+
+#+begin_src bash
+sqlite3 -column ~/.local/state/ehc/history.sqlite3 "<SQL>"
+#+end_src
+
+时间戳列为 Unix 秒，用 =datetime(received_at, 'unixepoch', 'localtime')= 转换为本地时间：
+
+#+begin_src bash
+# 最近 20 条记录
+sqlite3 -column ~/.local/state/ehc/history.sqlite3 "
+  SELECT id,
+         datetime(received_at, 'unixepoch', 'localtime') AS time,
+         request_method, request_url, response_status,
+         response_duration, response_body_bytes
+    FROM verb_history
+   ORDER BY id DESC
+   LIMIT 20;"
+
+# 按 URL 关键字过滤
+sqlite3 -column ~/.local/state/ehc/history.sqlite3 "
+  SELECT datetime(received_at, 'unixepoch', 'localtime') AS time,
+         request_method, request_url, response_status
+    FROM verb_history
+   WHERE request_url LIKE '%api%'
+   ORDER BY id DESC;"
+
+# 查看单条记录完整内容（含 Header、Body 与省略标记）
+sqlite3 -column ~/.local/state/ehc/history.sqlite3 "
+  SELECT datetime(received_at, 'unixepoch', 'localtime') AS time,
+         request_method, request_url,
+         request_headers,
+         CAST(request_body AS TEXT) AS request_body,
+         response_status,
+         response_headers,
+         CAST(response_body AS TEXT) AS response_body,
+         response_body_omitted,
+         response_duration, response_body_bytes
+    FROM verb_history
+   WHERE id = 1;"
+
+# 按请求方法统计
+sqlite3 -column ~/.local/state/ehc/history.sqlite3 "
+  SELECT request_method,
+         count(*),
+         round(avg(response_duration), 3) AS avg_duration
+    FROM verb_history
+   GROUP BY request_method;"
+#+end_src
+
+要点：
+
+- Body 列为 BLOB，查询时用 =CAST(... AS TEXT)= 转为文本
+- =response_body_omitted= 为 1 表示响应 Body 因超过 =hc-history-max-response-body-bytes= 被省略，原始字节数仍在 =response_body_bytes=
+- Header 为每行一条的 =Key: Value= 文本，可用 =LIKE= 过滤，如 =WHERE request_headers LIKE '%Authorization%'=
+- 查询归档时把路径换成 =history-YYYYMMDDTHHMMSSZ.sqlite3= 即可
