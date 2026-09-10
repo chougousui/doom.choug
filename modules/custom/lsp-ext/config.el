@@ -61,4 +61,13 @@
   ;; Eglot没有内置breadcrumb,启用Eglot作者提供的第三方包
   (use-package! breadcrumb
     :config
-    (breadcrumb-mode 1)))
+    (breadcrumb-mode 1)
+
+    ;; Org源码编辑buffer没有buffer-file-name,需要显式启用breadcrumb
+    (add-hook! 'org-src-mode-hook
+      (defun +lsp-ext-enable-breadcrumb-in-json-org-src-h ()
+        (when (derived-mode-p 'json-mode 'json-ts-mode 'jsonc-mode)
+          ;; Org将退出提示作为字符串放在header-line-format中,breadcrumb-local-mode要求header-line-format为列表
+          (unless (listp header-line-format)
+            (setq header-line-format (list header-line-format)))
+          (breadcrumb-local-mode 1))))))
