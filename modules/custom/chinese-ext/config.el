@@ -45,7 +45,7 @@
                    (funcall get-default-preedit)))))
       (apply fn args))))
 
-(after! pyim-liberime
+(after! (pyim-liberime liberime-core)
   ;; 兼容没有新接口的旧版 liberime，并避免重新加载配置后重复添加 advice。
   (when (and (fboundp 'liberime-search-context)
              (not (advice-member-p
