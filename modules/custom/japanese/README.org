@@ -11,7 +11,7 @@
 3. 激活输入法时，=liberime= 加载并选择 =kagiroi= schema，再由进程内的 =librime= 和 =librime-lua= 完成罗马字、假名及汉字转换。
 4. Kagiroi schema 来自 [[https://github.com/rimeinn/rime-kagiroi][rimeinn/rime-kagiroi]]，其运行文件保存在专供 Emacs 使用的 =liberime-user-data-dir= 中。
 
-模块依赖 =:input (chinese +rime)= 和 =:custom chinese-ext=。当前的 =liberime-user-data-dir= 为 =~/.config/emacs-liberime/=。
+模块依赖 =:input (chinese +rime)= 和 =:custom chinese-ext=。当前的 =liberime-user-data-dir= 为 =~/.config/my-rime-schema-for-emacs/=。
 
 ** Module flags
 - +childframe ::
@@ -23,7 +23,7 @@
 * Installation
 Kagiroi 依赖 =librime >= 1.11.2= 和 =librime-lua=。
 
-克隆 [[https://github.com/rimeinn/rime-kagiroi][rimeinn/rime-kagiroi]]，然后将 schema 文件复制到 =~/.config/emacs-liberime/=，但不要复制：
+克隆 [[https://github.com/rimeinn/rime-kagiroi][rimeinn/rime-kagiroi]]，然后将 schema 文件复制到 =~/.config/my-rime-schema-for-emacs/=，但不要复制：
 
 - =default.yaml=：会替换现有的 Rime 全局配置。
 - =key_bindings.yaml= 和 =punctuation.yaml=：名称通用，可能与其他 schema 冲突，并且当前配置不需要它们。

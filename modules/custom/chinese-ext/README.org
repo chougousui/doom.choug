@@ -3,7 +3,7 @@
 * Description
 配置 Emacs 内部使用的 Rime。
 
-Rime 用户数据目录为 =~/.config/emacs-liberime/=，其中保存自定义双拼方案、Workman 键位和词典配置。
+Rime 用户数据目录为 =~/.config/my-rime-schema-for-emacs/=，其中保存自定义双拼方案、Workman 键位和词典配置。
 
 该模块依赖 =:input (chinese +rime)=。
 

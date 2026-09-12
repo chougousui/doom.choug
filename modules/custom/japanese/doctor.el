@@ -7,5 +7,5 @@
   (warn! ":custom japanese expects :custom chinese-ext to configure liberime"))
 
 (unless (file-exists-p
-         (expand-file-name "~/.config/emacs-liberime/kagiroi.schema.yaml"))
-  (warn! "Kagiroi schema not found in ~/.config/emacs-liberime"))
+         (expand-file-name "~/.config/my-rime-schema-for-emacs/kagiroi.schema.yaml"))
+  (warn! "Kagiroi schema not found in ~/.config/my-rime-schema-for-emacs"))
