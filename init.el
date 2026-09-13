@@ -215,6 +215,7 @@
        dart-ext
        ;; kotlin-ext
        hurl
+       my-rest
        just
        ;;velocity-script
        revert-whitespace
