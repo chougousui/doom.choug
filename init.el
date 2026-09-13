@@ -221,6 +221,7 @@
        modeline-ext
        plantuml-ext
        iedit
+       ;;textcraft
        choug
        ;; diff
        calendar-ext

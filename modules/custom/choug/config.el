@@ -93,9 +93,8 @@
 
 ;; 自定义常用函数和快捷键绑定
 (map! :leader
-      (:prefix ("y" . "choug")
-       :desc "Align comments" "a" #'choug/align-comment-dwim
-       :desc "Minify code" "m" #'choug/minify))
+      :desc "Align comments" "y a" #'choug/align-comment-dwim
+      :desc "Minify code" "y m" #'choug/minify)
 
 ;; 默认自动刷新
 ;; (doom emacs的保守需求(仅仅在某些时候临时运行一下类似revert-buffer的功能)也很好)

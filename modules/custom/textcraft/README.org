@@ -1,0 +1,56 @@
+#+title: :custom textcraft
+
+* Description
+提供数组式文本的连接与拆分命令。命令保留原内容，并在原内容下方空一行后插入转换结果。
+
+* Commands
+| 快捷键    | 函数                         | 输入范围   | 输出格式                       |
+|-----------+------------------------------+------------+--------------------------------|
+| =M-m y n= | =textcraft/join-items=       | 当前选区   | 以半角逗号连接元素             |
+| =M-m y N= | =textcraft/join-items-2=     | 当前选区   | 以单引号包围元素并添加外层括号 |
+| =M-m y s= | =textcraft/split-items=      | 光标所在行 | 将半角逗号分隔的元素逐行输出   |
+
+** =textcraft/join-items=
+
+使用半角逗号、全角逗号、半角空白、全角空格和换行识别元素，忽略空白内容，并移除元素两端成对的单引号或双引号。结果复制到剪贴板，同时插入到选区最后一行下方。
+
+输入示例：
+
+#+begin_example
+"1", 2
+'3'，4　5
+#+end_example
+
+输出：
+
+#+begin_example
+1,2,3,4,5
+#+end_example
+
+** =textcraft/join-items-2=
+
+元素解析规则与 =textcraft/join-items= 相同。每个元素使用单引号包围，元素之间使用半角逗号和一个空格连接，整体使用圆括号包围。结果复制到剪贴板，同时插入到选区最后一行下方。
+
+输出：
+
+#+begin_example
+('1', '2', '3', '4', '5')
+#+end_example
+
+** =textcraft/split-items=
+
+读取光标所在行，仅使用半角逗号拆分元素，去除元素两端的空白并忽略空元素。该命令不读取选区，也不复制到剪贴板。
+
+输入示例：
+
+#+begin_example
+1, 2,3
+#+end_example
+
+输出：
+
+#+begin_example
+1
+2
+3
+#+end_example
