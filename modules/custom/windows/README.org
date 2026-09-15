@@ -1,0 +1,7 @@
+#+title: :custom windows
+
+* Description
+针对windows系统,需要做一些特别的配置,并针对系统特性做一些功能增强
+
+1. 特别配置: 强制utf-8读取,避免非英语系统上全局搜索结果乱码;强制utf-8-unix,默认LF换行
+2. 功能增强: reveal-in-folder,在资源管理器中打开当前文件所在目录

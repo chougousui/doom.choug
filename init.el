@@ -223,6 +223,7 @@
        plantuml-ext
        iedit
        ;;textcraft
+       (:if (featurep :system 'windows) windows)
        choug
        ;; diff
        calendar-ext
