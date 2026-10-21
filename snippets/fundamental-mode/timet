@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: (current time with timezone)
+# key: timet
+# uuid: timet
+# --
+`(format-time-string "%F %T %Z")`
