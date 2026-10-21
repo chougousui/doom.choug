@@ -224,6 +224,7 @@
        iedit
        ;;textcraft
        (:if (featurep :system 'windows) windows)
+       org-ext
        choug
        ;; diff
        calendar-ext

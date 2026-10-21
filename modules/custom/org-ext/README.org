@@ -1,0 +1,10 @@
+#+title: :custom org-ext
+
+* Description
+扩展一些org-mode的配置.
+提供 ~+org-ext/insert-date~ 命令,沿用Org的日期输入,以 ~Wed 2026-10-21~ 格式插入日期
+
+* Commands
+| 快捷键  | 函数                   | 生效范围       | 说明                              |
+|---------+------------------------+----------------+-----------------------------------|
+| =C-c .= | =+org-ext/insert-date= | =org-mode-map= | 覆盖Org默认绑定的 =org-timestamp= |
