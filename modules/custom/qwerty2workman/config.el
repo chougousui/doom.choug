@@ -1,205 +1,171 @@
 ;;; custom/qwerty2workman/config.el -*- lexical-binding: t; -*-
-;;; 需要 Emacs 29 或更高。 ;;; 版本要求
 
-;; Workman 键盘布局：
-;;
-;;   Q D R W B J F U P ;
-;;    A S H T G Y N E O I
-;;     Z X M C V K L , . /
+(require 'cl-lib)
 
-(defconst my-wm-keys ; 定义 QWERTY 物理键与 Workman 字符
-  '((?q ?Q ?q ?Q) (?w ?W ?d ?D) (?e ?E ?r ?R) (?r ?R ?w ?W) ; 第一排
-    (?t ?T ?b ?B) (?y ?Y ?j ?J) (?u ?U ?f ?F) (?i ?I ?u ?U) ; 第一排
-    (?o ?O ?p ?P) (?p ?P ?\; ?:) ; 第一排
-    (?a ?A ?a ?A) (?s ?S ?s ?S) (?d ?D ?h ?H) (?f ?F ?t ?T) ; 第二排
-    (?g ?G ?g ?G) (?h ?H ?y ?Y) (?j ?J ?n ?N) (?k ?K ?e ?E) ; 第二排
-    (?l ?L ?o ?O) (?\; ?: ?i ?I) ; 第二排
-    (?z ?Z ?z ?Z) (?x ?X ?x ?X) (?c ?C ?m ?M) (?v ?V ?c ?C) ; 第三排
-    (?b ?B ?v ?V) (?n ?N ?k ?K) (?m ?M ?l ?L))) ; 第三排
+;; 重载时先由旧版本恢复状态，再替换函数和映射表。
+(when (fboundp 'my-wm--restore-state)
+  (my-wm--restore-state))
 
-(defconst my-wm--clash-bases '(?h ?i ?j ?m)) ; 标记与 BS、TAB、LFD、RET 同码的 Ctrl 基键
+(defconst my-wm-keys
+  '((?q ?Q ?q ?Q) (?w ?W ?d ?D) (?e ?E ?r ?R) (?r ?R ?w ?W)
+    (?t ?T ?b ?B) (?y ?Y ?j ?J) (?u ?U ?f ?F) (?i ?I ?u ?U)
+    (?o ?O ?p ?P) (?p ?P ?\; ?:)
+    (?a ?A ?a ?A) (?s ?S ?s ?S) (?d ?D ?h ?H) (?f ?F ?t ?T)
+    (?g ?G ?g ?G) (?h ?H ?y ?Y) (?j ?J ?n ?N) (?k ?K ?e ?E)
+    (?l ?L ?o ?O) (?\; ?: ?i ?I)
+    (?z ?Z ?z ?Z) (?x ?X ?x ?X) (?c ?C ?m ?M) (?v ?V ?c ?C)
+    (?b ?B ?v ?V) (?n ?N ?k ?K) (?m ?M ?l ?L))
+  "每项依次为 QWERTY 下档、上档和对应的 Workman 下档、上档。")
 
-(defconst my-wm--modifier-kinds '(alt control hyper meta super)) ; Shift 通过上下档字符表示
+(defconst my-wm--modifier-kinds '(alt control hyper meta super))
+(defconst my-wm--tty-ambiguous-events '(8 9 10 13)
+  "文本终端中与 BS、TAB、LFD、RET 无法区分的 Ctrl 字符。")
 
-(defun my-wm--modifier-sets () ; 生成五种非 Shift 修饰键的全部组合
-  (let (sets) ; 保存组合
-    (dotimes (mask 32) ; 遍历三十二种组合
-      (let (modifiers) ; 保存当前组合
-        (dotimes (index 5) ; 遍历五种修饰键
-          (when (/= 0 (logand mask (ash 1 index))) ; 判断当前修饰键是否启用
-            (push (nth index my-wm--modifier-kinds) modifiers))) ; 加入当前修饰键
-        (push (nreverse modifiers) sets))) ; 保存当前组合
-    (nreverse sets))) ; 返回全部组合
+(defun my-wm--make-event-map ()
+  "生成保留修饰键的 QWERTY 到 Workman 事件映射。"
+  (let ((table (make-hash-table :test #'eql)))
+    (dotimes (mask 32)
+      (let (modifiers)
+        (dotimes (index (length my-wm--modifier-kinds))
+          (unless (zerop (logand mask (ash 1 index)))
+            (push (nth index my-wm--modifier-kinds) modifiers)))
+        (dolist (key my-wm-keys)
+          (dotimes (upper 2)
+            (let ((source (event-convert-list
+                           (append modifiers (list (nth upper key)))))
+                  (target (event-convert-list
+                           (append modifiers (list (nth (+ upper 2) key))))))
+              (unless (eql source target)
+                (puthash source target table)))))))
+    table))
 
-(defun my-wm--event (modifiers character) ; 按 Emacs 规则构造事件
-  (event-convert-list (append modifiers (list character)))) ; 正确处理 Ctrl、大小写及其他修饰位
+(defconst my-wm--event-map (my-wm--make-event-map))
+(defvar my-workman--enabled nil
+  "非 nil 表示 Workman 转换已启用；模块加载时默认停用。")
+(defvar my-wm--terminals nil
+  "各 terminal 的 (TERMINAL ORIGINAL-TABLE WORKMAN-TABLE) 状态。")
+(defvar my-wm--saved-special-map nil)
+(defvar my-wm--special-layer nil)
 
-(defun my-wm--make-entries () ; 生成全部映射条目
-  (let ((serial 0) entries) ; 保存中间事件编号和映射结果
-    (dolist (modifiers (my-wm--modifier-sets)) ; 遍历修饰键组合
-      (dolist (key my-wm-keys) ; 遍历物理键
-        (dotimes (upper-index 2) ; 分别处理下档和上档
-          (let* ((source-char (nth upper-index key)) ; 取得 QWERTY 来源字符
-                 (target-char (nth (+ upper-index 2) key)) ; 取得 Workman 目标字符
-                 (source-event (my-wm--event modifiers source-char)) ; 构造来源事件
-                 (target-event (my-wm--event modifiers target-char)) ; 构造目标事件
-                 (decode-p (and (memq 'control modifiers) ; 判断是否含有 Ctrl
-                                (memq (nth 0 key) my-wm--clash-bases)))) ; 判断是否存在特殊键冲突
-            (unless (eql source-event target-event) ; 跳过不需要转换的事件
-              (setq serial (1+ serial)) ; 分配中间事件编号
-              (push (list (if decode-p 'decode 'translation) ; 保存处理阶段
-                          (vector source-event) ; 保存来源键序列
-                          (vector target-event) ; 保存目标键序列
-                          (and decode-p ; 仅冲突事件需要中间事件
-                               (make-symbol (format "my-wm--bridge-%d" serial)))) ; 创建不可冲突的私有事件
-                    entries)))))) ; 保存当前条目
-    (nreverse entries))) ; 返回全部条目
+(defun my-wm--make-keyboard-layer (original graphic-p)
+  "继承 ORIGINAL，为字符事件建立输入法之前的转换层。
+GRAPHIC-P 为 nil 时保留文本终端中无法区分的 Ctrl 字符。"
+  (let ((table (make-char-table 'keyboard-translate-table nil)))
+    (cond
+     ((char-table-p original)
+      (set-char-table-parent table original))
+     ((or (stringp original) (vectorp original))
+      ;; Emacs 仍接受旧式字符串或向量；保留其中与本模块无关的转换。
+      (let ((parent (make-char-table 'keyboard-translate-table nil)))
+        (dotimes (index (length original))
+          (aset parent index (aref original index)))
+        (set-char-table-parent table parent)))
+     (original
+      (error "Unsupported keyboard-translate-table: %S" (type-of original))))
+    (maphash
+     (lambda (source target)
+       (when (and (characterp source)
+                  (or graphic-p (not (memq source my-wm--tty-ambiguous-events))))
+         (aset table source target)))
+     my-wm--event-map)
+    table))
 
-(defconst my-wm--entries (my-wm--make-entries)) ; 缓存全部映射条目
+(defun my-workman--enable-terminal (&optional frame)
+  "为 FRAME 所属的 terminal 启用字符转换，同一 terminal 只启用一次。"
+  (let* ((frame (or frame (selected-frame)))
+         (terminal (frame-terminal frame)))
+    (unless (assq terminal my-wm--terminals)
+      (with-selected-frame frame
+        (let* ((original keyboard-translate-table)
+               (table (my-wm--make-keyboard-layer original (display-graphic-p frame))))
+          (setq keyboard-translate-table table)
+          (push (list terminal original table) my-wm--terminals))))))
 
-(defun my-wm--make-translation-layer (parent) ; 构造最终转换层
-  (let ((map (make-sparse-keymap))) ; 创建独立 keymap
-    (set-keymap-parent map parent) ; 继承原有 key-translation-map
-    (dolist (entry my-wm--entries) ; 遍历全部条目
-      (if (eq (nth 0 entry) 'decode) ; 判断是否为冲突条目
-          (define-key map (vector (nth 3 entry)) (nth 2 entry)) ; 将私有事件转换为最终事件
-        (define-key map (nth 1 entry) (nth 2 entry)))) ; 普通事件直接转换
-    map)) ; 返回转换层
+(defun my-wm--translate-modified-event ()
+  "转换不能存入字符表的原始组合键，并把逻辑事件重新入队。"
+  (interactive)
+  (let* ((event last-input-event)
+         (frame (if (and (framep last-event-frame) (frame-live-p last-event-frame))
+                    last-event-frame
+                  (selected-frame)))
+         (target (if (and my-workman--enabled
+                          (display-graphic-p frame)
+                          (assq (frame-terminal frame) my-wm--terminals))
+                     (gethash event my-wm--event-map event)
+                   event)))
+    ;; 此处理发生在输入法和按键记录之前。重新入队的事件跳过原始键盘转换阶段；t 保证前缀键序列和宏记录包含转换后的事件。
+    (setq unread-command-events
+          (cons (cons t target) unread-command-events))))
 
-(defun my-wm--make-decode-layer (parent) ; 构造冲突事件解码层
-  (let ((map (make-sparse-keymap))) ; 创建独立 keymap
-    (set-keymap-parent map parent) ; 继承原有 input-decode-map
-    (dolist (entry my-wm--entries) ; 遍历全部条目
-      (when (eq (nth 0 entry) 'decode) ; 仅处理冲突条目
-        (define-key map (nth 1 entry) (vector (nth 3 entry))))) ; 来源事件只转换为私有事件
-    map)) ; 返回解码层
+(defun my-wm--make-special-layer (original)
+  "继承 ORIGINAL，在原始事件入口处理非字符组合键。"
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map original)
+    (maphash
+     (lambda (source _target)
+       (unless (characterp source)
+         (define-key map (vector source) #'my-wm--translate-modified-event)))
+     my-wm--event-map)
+    map))
 
-(defun my-wm--make-direct-table () ; 构造直接读取函数使用的转换表
-  (let ((table (make-hash-table :test #'eql))) ; 创建事件哈希表
-    (dolist (entry my-wm--entries) ; 遍历全部条目
-      (puthash (aref (nth 1 entry) 0) ; 取得来源事件
-               (aref (nth 2 entry) 0) ; 取得最终事件
-               table)) ; 保存映射
-    table)) ; 返回转换表
+(defun my-wm--without-layer (current layer original)
+  "从 CURRENT 的父链移除 LAYER，根层被移除时恢复 ORIGINAL。"
+  (if (eq current layer)
+      original
+    (let* ((character-layer-p (char-table-p layer))
+           (layer-p (if character-layer-p #'char-table-p #'keymapp))
+           (get-parent (if character-layer-p #'char-table-parent #'keymap-parent))
+           (set-parent (if character-layer-p #'set-char-table-parent #'set-keymap-parent))
+           (cursor current))
+      (while (funcall layer-p cursor)
+        (let ((parent (funcall get-parent cursor)))
+          (if (eq parent layer)
+              (progn
+                (funcall set-parent cursor (funcall get-parent layer))
+                (setq cursor nil))
+            (setq cursor parent)))))
+    current))
 
-(defun my-wm--make-decode-event-table () ; 构造文本终端冲突事件集合
-  (let ((table (make-hash-table :test #'eql))) ; 创建事件集合
-    (dolist (entry my-wm--entries) ; 遍历全部条目
-      (when (eq (nth 0 entry) 'decode) ; 找出冲突事件
-        (puthash (aref (nth 1 entry) 0) t table))) ; 将来源事件加入集合
-    table)) ; 返回事件集合
+(defun my-wm--restore-state ()
+  "移除本模块的转换层和 hook，保留原有及后来叠加的配置。"
+  (remove-hook 'after-make-frame-functions #'my-workman--enable-terminal)
+  (dolist (state my-wm--terminals)
+    (let* ((terminal (nth 0 state))
+           (frame (cl-find-if (lambda (frame) (eq (frame-terminal frame) terminal))
+                             (frame-list))))
+      (when frame
+        (with-selected-frame frame
+          (setq keyboard-translate-table
+                (my-wm--without-layer keyboard-translate-table
+                                      (nth 2 state) (nth 1 state)))))))
+  (when my-wm--special-layer
+    (setq special-event-map
+          (my-wm--without-layer special-event-map
+                                my-wm--special-layer my-wm--saved-special-map)))
+  (setq my-workman--enabled nil
+        my-wm--terminals nil
+        my-wm--special-layer nil
+        my-wm--saved-special-map nil))
 
-(defconst my-wm--direct-table (my-wm--make-direct-table)) ; 缓存直接转换表
+(defun my-workman-enable ()
+  "启用 Workman 字符和组合键转换；已启用时不做任何操作。"
+  (interactive)
+  (unless my-workman--enabled
+    (condition-case error-data
+        (progn
+          (setq my-wm--saved-special-map special-event-map
+                my-wm--special-layer (my-wm--make-special-layer special-event-map)
+                special-event-map my-wm--special-layer)
+          (dolist (frame (frame-list))
+            (my-workman--enable-terminal frame))
+          (add-hook 'after-make-frame-functions #'my-workman--enable-terminal)
+          (setq my-workman--enabled t))
+      (error
+       (my-wm--restore-state)
+       (signal (car error-data) (cdr error-data))))))
 
-(defconst my-wm--decode-event-table (my-wm--make-decode-event-table)) ; 缓存冲突事件集合
-
-(defvar my-wm--installed nil) ; 记录安装状态
-
-(defvar my-wm--saved-translation-map nil) ; 保存原 key-translation-map
-
-(defvar my-wm--translation-layer nil) ; 保存当前转换层
-
-(defvar my-wm--saved-decode nil) ; 保存各图形终端的解码状态
-
-(defun my-wm--without-layer (current layer original) ; 从 keymap 父链移除指定层
-  (if (eq current layer) ; 判断指定层是否位于父链根部
-      original ; 直接恢复原 keymap
-    (let ((cursor current) parent done) ; 准备遍历父链
-      (while (and (keymapp cursor) (not done)) ; 沿父链查找指定层
-        (setq parent (keymap-parent cursor)) ; 取得父 keymap
-        (cond ((eq parent layer) ; 判断是否找到指定层
-               (set-keymap-parent cursor original) ; 将上层直接连接到原 keymap
-               (setq done t)) ; 停止查找
-              ((keymapp parent) ; 判断父链是否还能继续
-               (setq cursor parent)) ; 移动到父 keymap
-              (t ; 处理父链结束
-               (setq done t)))) ; 停止查找
-      current))) ; 保留后来添加的上层 keymap
-
-(defun my-wm--frame-on-terminal (terminal) ; 查找指定终端的现存 frame
-  (catch 'found ; 允许立即返回
-    (dolist (frame (frame-list)) ; 遍历全部 frame
-      (when (eq (frame-terminal frame) terminal) ; 判断终端是否相同
-        (throw 'found frame))) ; 返回找到的 frame
-    nil)) ; 未找到时返回 nil
-
-(defun my-wm-install-decode (&optional frame) ; 为图形终端安装冲突事件解码
-  (let ((frame (or frame (selected-frame)))) ; 默认使用当前 frame
-    (when (display-graphic-p frame) ; 文本终端无法区分 Ctrl 同码键
-      (let ((terminal (frame-terminal frame))) ; 取得 frame 所属终端
-        (unless (assq terminal my-wm--saved-decode) ; 同一终端只安装一次
-          (with-selected-frame frame ; 切换到目标终端
-            (let* ((original input-decode-map) ; 保存原解码表
-                   (layer (my-wm--make-decode-layer original))) ; 完整构造新解码层
-              (setq input-decode-map layer) ; 启用新解码层
-              (push (list terminal original layer) my-wm--saved-decode)))))))) ; 保存卸载状态
-
-(defun my-wm--restore-decode-layers () ; 恢复各图形终端的解码表
-  (dolist (state my-wm--saved-decode) ; 遍历终端状态
-    (let* ((terminal (nth 0 state)) ; 取得终端
-           (original (nth 1 state)) ; 取得原解码表
-           (layer (nth 2 state)) ; 取得本配置的解码层
-           (frame (my-wm--frame-on-terminal terminal))) ; 查找现存 frame
-      (when frame ; 只处理仍然存在的终端
-        (with-selected-frame frame ; 切换到目标终端
-          (setq input-decode-map ; 更新该终端的解码表
-                (my-wm--without-layer input-decode-map layer original)))))) ; 仅移除本配置的解码层
-  (setq my-wm--saved-decode nil)) ; 清空终端状态
-
-(defun my-wm--translate-direct-event (event) ; 转换直接读取的事件
-  (if (or (not my-wm--installed) ; 未安装时不转换
-          (and (not (display-graphic-p)) ; 判断当前是否为文本终端
-               (gethash event my-wm--decode-event-table))) ; 判断事件是否无法区分
-      event ; 保留无法安全转换的事件
-    (gethash event my-wm--direct-table event))) ; 转换其他事件
-
-(defun my-wm--around-direct-read (original &rest arguments) ; 包装直接读取函数
-  (my-wm--translate-direct-event (apply original arguments))) ; 读取并转换一次
-
-(defun my-wm-install () ; 安装 Workman 映射
-  (interactive) ; 允许通过 M-x 调用
-  (when my-wm--installed ; 阻止重复安装
-    (user-error "workman: 已装载")) ; 报告重复安装
-  (let ((original key-translation-map) layer) ; 保存原转换表
-    (condition-case error-data ; 安装失败时执行回滚
-        (progn ; 开始安装
-          (setq layer (my-wm--make-translation-layer original)) ; 完整构造转换层
-          (setq my-wm--saved-translation-map original) ; 保存原转换表
-          (setq my-wm--translation-layer layer) ; 保存新转换层
-          (setq key-translation-map layer) ; 启用新转换层
-          (my-wm-install-decode) ; 安装当前图形终端的解码层
-          (add-hook 'after-make-frame-functions #'my-wm-install-decode) ; 处理以后创建的图形 frame
-          (dolist (function '(read-event read-char read-char-exclusive)) ; 遍历直接读取入口
-            (advice-add function :around #'my-wm--around-direct-read)) ; 安装直接读取转换
-          (setq my-wm--installed t)) ; 全部成功后标记为已安装
-      (error ; 捕获安装错误
-       (remove-hook 'after-make-frame-functions #'my-wm-install-decode) ; 移除 frame hook
-       (dolist (function '(read-event read-char read-char-exclusive)) ; 遍历直接读取入口
-         (advice-remove function #'my-wm--around-direct-read)) ; 移除 advice
-       (my-wm--restore-decode-layers) ; 恢复终端解码表
-       (when layer ; 判断转换层是否已经创建
-         (setq key-translation-map ; 更新全局转换表
-               (my-wm--without-layer key-translation-map layer original))) ; 移除转换层
-       (setq my-wm--saved-translation-map nil) ; 清除原表状态
-       (setq my-wm--translation-layer nil) ; 清除转换层状态
-       (setq my-wm--installed nil) ; 恢复未安装状态
-       (signal (car error-data) (cdr error-data)))))) ; 重新抛出原错误
-
-(defun my-wm-uninstall () ; 卸载 Workman 映射
-  (interactive) ; 允许通过 M-x 调用
-  (unless my-wm--installed ; 阻止重复卸载
-    (user-error "workman: 未装载")) ; 报告未安装
-  (setq my-wm--installed nil) ; 停止直接读取转换
-  (remove-hook 'after-make-frame-functions #'my-wm-install-decode) ; 移除 frame hook
-  (dolist (function '(read-event read-char read-char-exclusive)) ; 遍历直接读取入口
-    (advice-remove function #'my-wm--around-direct-read)) ; 移除 advice
-  (my-wm--restore-decode-layers) ; 恢复终端解码表
-  (setq key-translation-map ; 更新全局转换表
-        (my-wm--without-layer key-translation-map ; 移除本配置转换层
-                              my-wm--translation-layer ; 指定转换层
-                              my-wm--saved-translation-map)) ; 指定原转换表
-  (setq my-wm--saved-translation-map nil) ; 清除原表状态
-  (setq my-wm--translation-layer nil)) ; 清除转换层状态
-
-(unless my-wm--installed ; 避免重复安装
-  (my-wm-install)) ; 首次加载时启用布局
+(defun my-workman-disable ()
+  "停用 Workman 转换，恢复每个 terminal 的原有字符表；已停用时不做任何操作。"
+  (interactive)
+  (when my-workman--enabled
+    (my-wm--restore-state)))

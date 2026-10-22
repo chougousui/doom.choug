@@ -1,32 +1,49 @@
 #+title: :custom qwerty2workman
 
-* 模块目的
-1. 用户已经长期使用 Workman 布局，快捷键也已调试为符合个人习惯的 Workman 绑定。
-2. 企业 Windows 工作电脑不允许修改系统键盘布局，因此通常通过输出 Workman 布局的外接键盘工作。
-3. 在无法使用外接键盘时，电脑内置键盘仍然输出 QWERTY；本模块仅在 Emacs 内部将这些 QWERTY 按键映射为 Workman。
+* 用途与前提
+本模块在 Emacs 内将 QWERTY 键盘事件转换为 Workman，供无法修改系统布局、又需要继续使用既有 Workman 输入习惯和快捷键的设备使用。
 
-启用后，普通文字输入、带修饰键的输入和快捷键都会按 Workman 布局处理，使既有的 Workman 快捷键配置可以继续使用。
-
-* 原理与时间点
-模块加载时构造并安装两层按键转换：
-
-- =input-decode-map= 处理与 =BS=、=TAB=、=LFD=、=RET= 同码的 Ctrl 事件。
-- =key-translation-map= 将 QWERTY 按键事件转换为对应的 Workman 按键事件，处理大多数输入场景。
-  - 普通缓冲区输入：按 QWERTY 的 =w= 会插入 Workman 的 =d=。
-  - 单个组合键：=C-s= 等带修饰键的事件会在快捷键查找前完成转换；例如，按 =C-w= 会转换为 =C-d=，从而执行绑定到 =C-d= 的命令。
-  - 标准多键快捷键：由 keymap 定义的 =M-m a b= 仍由 =key-translation-map= 逐个转换每次按键事件。
-- =read-event=、=read-char= 和 =read-char-exclusive= 的 advice 转换命令内部直接读取的按键事件。
-  - 分阶段快捷键：前置命令已经执行，再由命令内部调用 =read-event= 等待后续按键。例如，=general-key-dispatch= 可以读取分派键
-  - 跳转工具：=avy-goto-char= 启动后调用 =read-char= 等待目标字符。例如，按 QWERTY 的 =w= 应当选择 Workman 字符 =d=。
-  - 单字符选项：Org 列表和表格排序调用 =read-char-exclusive= 读取排序方式。
-
-模块在 =init.el= 的 =:custom= 段中早于后续用户快捷键模块加载。每次按键时，转换发生在 Emacs 使用用户快捷键配置查找命令之前：
+- Emacs 29 或更高版本。
+- 系统布局与键盘硬件输出均为 QWERTY；系统或硬件已经输出 Workman 时不启用转换。
+- 图形 Emacs 支持字符及 Alt、Control、Hyper、Meta、Super 的组合；Shift 通过上下档字符表示。
+- 文本终端转换可区分的字符，保留与 BS、TAB、LFD、RET 同码的 Ctrl 字符；非字符组合键仅在图形终端转换。
 
 #+begin_example
-QWERTY 物理按键 -> input-decode-map -> key-translation-map -> 用户快捷键查找
+Q D R W B J F U P ;
+ A S H T G Y N E O I
+  Z X M C V K L , . /
 #+end_example
-* 使用前提与注意
-- Emacs 29 或更高版本。
-- 使用图形 Emacs。文本终端无法区分部分 Ctrl 事件的同码按键，配置会保留这些无法安全转换的事件。
-- 操作系统键盘布局和键盘硬件输出均为 QWERTY；本模块负责在 Emacs 内转换为 Workman。
-- 用户快捷键配置已经在系统层面设置为 Workman，或键盘硬件层面输出 Workman 的电脑上适配成功。
+
+* 转换入口
+所有转换发生在原始键盘事件进入输入法之前。两条路径按 =characterp= 互斥：
+
+| 事件类型                                             | 入口                                         | 处理                                                |
+|------------------------------------------------------+----------------------------------------------+-----------------------------------------------------|
+| 字符事件，包括大小写、标点及可编码为字符的 Ctrl 组合 | terminal-local 的 =keyboard-translate-table= | 原始字符转换为 Workman 字符                         |
+| 其余带修饰键的字母、标点事件                         | =special-event-map=                          | 转换后以 =(t . EVENT)= 放回 =unread-command-events= |
+
+=special-event-map= 的处理发生在按键记录和输入法之前；重新入队的事件跳过原始键盘转换阶段，并正常参与前缀键序列和键盘宏记录。因此录制的宏保存 Workman 事件，回放时保持原样。
+
+#+begin_example
+原始键盘事件 -> 字符表或 special-event-map -> Workman 事件 -> 输入法或命令
+输入法提交、事件重新入队、键盘宏回放 -> 逻辑事件 -> 输入法或命令
+#+end_example
+
+模块不修改 =input-decode-map=、=key-translation-map=、输入法函数或读取函数，不使用输入法提交标记。
+
+* 输入法与直接读取
+- pyim 和 kagiroi 在输入入口就收到 Workman 字符；首键和后续键使用同一布局。
+- 输入法提交的英文、中文、日文保持原样。
+- =read-event=、=read-char=、=read-char-exclusive= 和 =read-key-sequence= 共用原始事件转换入口，无需 advice。
+- =unread-command-events= 中的事件按已经处理的逻辑事件解释。以程序生成此队列时应提供 Workman 事件。
+- =read-char= 和 =read-char-exclusive= 继续遵循 Emacs 自身的修饰键规约规则。
+
+* 启停与生命周期
+在 =init.el= 的 =:custom= 段启用 =qwerty2workman= 后，仅加载命令，转换默认关闭。启停状态不持久化；每次重启 Emacs 或重新加载模块后均为关闭状态。
+
+- =M-x my-workman-disable=：停用转换，移除模块转换层，恢复每个仍存活 terminal 的原表。
+- =M-x my-workman-enable=：为所有现有 terminal 启用转换，并处理随后新建的 frame。
+- 重复启用或重复停用均不做任何操作，不叠加转换层或 hook。
+- 多个 frame 共用同一 terminal 时仅启用一次。
+- 原字符表和 special-event-map 通过父层继承；停用时保留后来叠加的外层配置；启用失败时回滚。
+- 从旧版 keymap/advice 实现升级到此实现后重启 Emacs，清除旧版尚未触发的延迟加载回调。此实现自身支持重新加载。
