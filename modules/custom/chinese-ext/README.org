@@ -22,3 +22,11 @@ Rime 用户数据目录为 =~/.config/my-rime-schema-for-emacs/=，其中保存�
 =packages.el= 使用 =chougousui/liberime= 的 =fix/pyim-search= 分支，并取消 Doom 的固定版本。该分支修复空候选链表释放时的崩溃，并提供 =liberime-search-context=。
 
 =config.el= 仅在 =pyim-liberime--get-code= 执行期间，让 =liberime-search= 的候选词和 preedit 来自同一个隔离搜索会话。
+
+* 切换 Rime schema
+=M-x liberime-select-schema-interactive= 用于选择 Rime 后端的 schema，候选项格式为 =方案名称(schema_id)=。
+
+- 切回小鹤双拼：选择 schema ID 为 =double_pinyin_flypy_workman= 的候选项。
+- 切换日语：选择 schema ID 为 =kagiroi= 的候选项。
+
+切换 schema 不会改变 Emacs 中的输入法名称，使用日语方案时仍可能显示 =pyim=。Rime 会把选择写入用户数据目录的 =user.yaml=，重启后仍可能恢复上次选择的 schema；需要切回时，再次运行上述命令。
