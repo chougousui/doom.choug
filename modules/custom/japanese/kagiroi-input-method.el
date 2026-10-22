@@ -167,29 +167,63 @@ When NOERROR is non-nil, return nil instead of reporting failure."
     (ignore-errors (liberime-commit-composition)))
   (+japanese-kagiroi--take-commit))
 
-(defun +japanese-kagiroi--composition-loop ()
-  "Read and process events until Kagiroi finishes its composition."
-  (let (result done)
+(defun +japanese-kagiroi--edit-raw-input (raw event input-changed-p)
+  "Update RAW, a (TEXT . CURSOR) pair, for EVENT.
+INPUT-CHANGED-P distinguishes text edits from Rime candidate operations."
+  (let ((text (car raw))
+        (cursor (cdr raw)))
+    (cond
+     ((memq event '(left 2))
+      (setq cursor (max 0 (1- cursor))))
+     ((memq event '(right 6))
+      (setq cursor (min (length text) (1+ cursor))))
+     ((memq event '(home 1))
+      (setq cursor 0))
+     ((memq event '(end 5))
+      (setq cursor (length text)))
+     ((and input-changed-p (memq event '(backspace 8 127)) (> cursor 0))
+      (setq text (concat (substring text 0 (1- cursor)) (substring text cursor))
+            cursor (1- cursor)))
+     ((and input-changed-p (memq event '(delete deletechar 4)) (< cursor (length text)))
+      (setq text (concat (substring text 0 cursor) (substring text (1+ cursor)))))
+     ((and input-changed-p (characterp event) (<= 33 event) (<= event 126))
+      (setq text (concat (substring text 0 cursor) (string event) (substring text cursor))
+            cursor (1+ cursor))))
+    (cons text cursor)))
+
+(defun +japanese-kagiroi--composition-loop (initial-key)
+  "Process composition events, submitting the original input on Return.
+INITIAL-KEY is the first character already processed by Rime."
+  (let ((raw-input (cons (string initial-key) 1))
+        result done)
     (unwind-protect
         (while (and (not done) (+japanese-kagiroi--composing-p))
           (let* ((inhibit-quit t)
-                 (event (+japanese-kagiroi--read-event))
-                 (handled (and event
-                               (ignore-errors
-                                 (liberime-process-event event))))
-                 (commit (+japanese-kagiroi--take-commit)))
-            (cond
-             (commit
-              (setq result commit
-                    done t))
-             ((not handled)
-              (setq result (+japanese-kagiroi--commit-composition)
-                    done t)
-              (when event
-                (setq unread-command-events
-                      (cons event unread-command-events))))
-             ((not (+japanese-kagiroi--composing-p))
-              (setq done t)))))
+                 (event (+japanese-kagiroi--read-event)))
+            (if (memq event '(return kp-enter 13))
+                (setq result (car raw-input)
+                      done t)
+              (let* ((input-before (ignore-errors (liberime-get-input)))
+                     (handled (and event
+                                   (ignore-errors (liberime-process-event event))))
+                     (commit (+japanese-kagiroi--take-commit)))
+                (when handled
+                  (setq raw-input
+                        (+japanese-kagiroi--edit-raw-input
+                         raw-input event
+                         (not (equal input-before (ignore-errors (liberime-get-input)))))))
+                (cond
+                 (commit
+                  (setq result commit
+                        done t))
+                 ((not handled)
+                  (setq result (+japanese-kagiroi--commit-composition)
+                        done t)
+                  (when event
+                    (setq unread-command-events
+                          (cons event unread-command-events))))
+                 ((not (+japanese-kagiroi--composing-p))
+                  (setq done t)))))))
       (ignore-errors (liberime-clear-composition))
       (+japanese-kagiroi--hide-candidates))
     (and result (string-to-list result))))
@@ -210,7 +244,7 @@ When NOERROR is non-nil, return nil instead of reporting failure."
             (cond
              (commit (string-to-list commit))
              ((and handled (+japanese-kagiroi--composing-p))
-              (+japanese-kagiroi--composition-loop))
+              (+japanese-kagiroi--composition-loop key))
              (t
               (liberime-clear-composition)
               (list key)))))

@@ -50,3 +50,7 @@ Kagiroi 的部分词典文件较大。安装后的第一次 Emacs 启动中，=l
 #+begin_example
 M-x set-input-method RET kagiroi RET
 #+end_example
+
+组合输入期间，=Return=、=C-m= 和数字键盘回车直接提交本轮输入的原文字母，不提交转换后的假名或候选词。
+
+原文记录支持退格、Delete、左右光标、Home/End 及对应的 =C-h/C-d/C-b/C-f/C-a/C-e=。空格和数字选词等操作仍由 Rime 处理，不作为原文字母记录。
