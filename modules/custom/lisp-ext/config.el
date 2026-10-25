@@ -6,3 +6,7 @@
     (whitespace-cleanup)))
 
 (add-hook! 'before-save-hook #'lisp-ext/cleanup-whitespace-on-save)
+
+;; 将C-x C-e绑定为打印在当前buffer的那个函数上
+(map! :map emacs-lisp-mode-map
+      "C-x C-e" #'eval-print-last-sexp)
