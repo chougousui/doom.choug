@@ -223,6 +223,7 @@
        plantuml-ext
        iedit
        ;;textcraft
+       translate
        (:if (featurep :system 'windows) windows)
        org-ext
        choug

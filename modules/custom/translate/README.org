@@ -1,0 +1,32 @@
+#+title: :custom translate
+
+* Description
+基于 [[https://github.com/lorniu/gt.el][gt.el]] 的翻译模块，使用 Google 翻译在英语、中文、日语之间互译。译文插入到原文之后，中间空一行。
+
+=gt= 不在启动时加载，由 Doom 在 Emacs 空闲时分批后台加载（=:defer-incrementally=）。加载完成前按下 =M-m r e= / =M-m r j= / =M-m r c= 会报函数未定义的错误。
+
+** Packages
+- [[doom-package:gt]]
+
+* Commands
+| 快捷键    | 函数                    | 输入范围                    | 翻译方向                       |
+|-----------+-------------------------+-----------------------------+--------------------------------|
+| =M-m r r= | =gt-translate=          | 选区，无选区时为整个 buffer | 自动识别，翻译前预览并可切换   |
+| =M-m r e= | =translate/to-english=  | 选区，无选区时为整个 buffer | 自动识别的源语言翻译为英语     |
+| =M-m r j= | =translate/to-japanese= | 选区，无选区时为整个 buffer | 自动识别的源语言翻译为日语     |
+| =M-m r c= | =translate/to-chinese=  | 选区，无选区时为整个 buffer | 自动识别的源语言翻译为中文     |
+
+源语言由 gt.el 根据原文字符识别：含假名判为日语，含汉字判为中文。只含汉字的日文会被识别为中文。
+
+** =gt-translate=
+gt.el 自带的命令，使用本模块配置的 =gt-default-translator=。翻译前在 minibuffer 中预览原文和翻译方向（如 =[en > zh]=），原文可直接修改：
+
+- =C-n= / =C-p= ：在识别出的源语言可翻成的两种语言之间切换
+- =C-u C-n= / =C-u C-p= ：跳过自动识别，在 en、zh、ja 两两组合的六个方向中切换
+- =RET= ：开始翻译
+- =C-g= ：取消
+
+gt.el 会记住最后确认的方向，下次遇到同一种源语言时优先使用。
+
+** =translate/to-english= / =translate/to-japanese= / =translate/to-chinese=
+不预览，直接翻译。源语言自动识别，目标语言由命令决定。三个命令都调用 =translate--start=。
