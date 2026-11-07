@@ -14,7 +14,8 @@
             (when (display-graphic-p)
               (dolist (charset '(kana han cjk-misc bopomofo))
                 (set-fontset-font (frame-parameter nil 'font) charset
-                                  (font-spec :family "KaiTi" :size 15.0))))))
+                                  (font-spec :family "AR PL Ukai CN" :size 15.0)
+                                  )))))
 
 ;; anti-doom
 (setq doom-leader-alt-key "M-m" ;; 重新配置emacs风格下的leader key
