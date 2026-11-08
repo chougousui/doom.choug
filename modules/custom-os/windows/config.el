@@ -1,4 +1,4 @@
-;;; custom/windows/config.el -*- lexical-binding: t; -*-
+;;; custom-os/windows/config.el -*- lexical-binding: t; -*-
 
 ;; 非英语系统的windows(如中文系统)上,emacs默认按系统代码页解码外部程序输出,
 ;; 而全局搜索等工具(rg等)实际输出utf-8,导致搜索结果出现乱码,

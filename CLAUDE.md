@@ -19,8 +19,8 @@ Leader 键改为 `M-m`。仓库无构建系统、无测试框架。
 
 ### 模块系统
 
-配置全部拆进 `modules/custom/<name>/` 与 `modules/custom-ai/<name>/`，由 `init.el` 末尾的
-`:custom` / `:custom-ai` 两个分类列表启用。**禁用模块的做法是在 `init.el` 中注释掉该行，目录保留**，
+配置全部拆进 `modules/custom/<name>/`、`modules/custom-os/<name>/` 与 `modules/custom-ai/<name>/`，由 `init.el` 末尾的
+`:custom` / `:custom-os` / `:custom-ai` 三个分类列表启用。**禁用模块的做法是在 `init.el` 中注释掉该行，目录保留**，
 所以磁盘上存在的模块目录不等于已启用的模块 —— 判断是否生效必须查 `init.el`。
 
 当前已存在但被禁用的模块：`company-ext`、`kotlin-ext`、`diff`、`codeium`、`gptel`。

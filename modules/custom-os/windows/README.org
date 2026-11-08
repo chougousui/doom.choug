@@ -1,4 +1,4 @@
-#+title: :custom windows
+#+title: :custom-os windows
 
 * Description
 针对windows系统,需要做一些特别的配置,并针对系统特性做一些功能增强

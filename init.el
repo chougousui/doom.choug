@@ -224,11 +224,13 @@
        iedit
        ;;textcraft
        translate
-       (:if (featurep :system 'windows) windows)
        org-ext
        choug
        ;; diff
        calendar-ext
+
+       :custom-os
+       (:if (featurep :system 'windows) windows)
 
        :custom-ai
        ;; codeium

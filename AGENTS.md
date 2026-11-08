@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This repository is a personal Doom Emacs configuration. Root files define the global setup: `init.el` enables Doom modules, `config.el` contains global settings, and `packages.el` declares global packages. Feature-specific configuration belongs under `modules/custom/<module>/`; AI integrations live under `modules/custom-ai/<module>/`. A module commonly contains `.doommodule`, `config.el`, optional `packages.el`, helper `.el` files, and `README.org`. There is no separate test or asset directory.
+This repository is a personal Doom Emacs configuration. Root files define the global setup: `init.el` enables Doom modules, `config.el` contains global settings, and `packages.el` declares global packages. Feature-specific configuration belongs under `modules/custom/<module>/`; OS-specific configuration lives under `modules/custom-os/<module>/`; AI integrations live under `modules/custom-ai/<module>/`. A module commonly contains `.doommodule`, `config.el`, optional `packages.el`, helper `.el` files, and `README.org`. There is no separate test or asset directory.
 
 ## Build, Test, and Development Commands
 
