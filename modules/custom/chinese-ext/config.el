@@ -53,3 +53,8 @@
                    #'pyim-liberime--get-code)))
     (advice-add #'pyim-liberime--get-code
                 :around #'+chinese-ext--pyim-liberime-get-code-a)))
+
+(after! pangu-spacing
+  ;; Doom `:input chinese' 让 org-mode 在保存时写入真实空格；改回 nil，只保留 overlay 显示。
+  ;; 同名 `setq-hook!' 会覆盖 Doom 定义的同名 hook 函数；放在 `after!' 内，保证在 Doom 的 `:config' 之后执行。
+  (setq-hook! 'org-mode-hook pangu-spacing-real-insert-separtor nil))
