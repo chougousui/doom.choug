@@ -231,6 +231,7 @@
 
        :custom-os
        (:if (featurep :system 'windows) windows)
+       (:if (featurep :system 'wsl) wsl)
 
        :custom-ai
        ;; codeium

@@ -1,0 +1,19 @@
+#+title: :custom-os wsl
+
+* Description
+wslg环境下一些需要手动处理的问题
+
+1. 图标问题: 打开emacs后,doom首页的图标问题可以在emacs内运行 =M-x nerd-icons-install-fonts= 来解决,该命令安装的字体为 =Symbols Nerd Font Mono=,也可以使用系统工具安装该字体
+2. 窗口边框问题: =(add-to-list 'default-frame-alist '(undecorated . t))= 可以告诉GTK不要绘制边框,但会导致没有抓手来移动窗口,也可以在GTK里面配置边框的高度:
+   #+begin_src css
+   /* ~/.config/gtk-3.0/gtk.css */
+   .default-decoration {
+     min-height: 0;
+     padding: 0px;
+   }
+   .default-decoration .titlebutton {
+     min-height: 1px;
+     min-width: 0px;
+   }
+   #+end_src
+   可以在emacs内运行 =M-x emacs-version= 来确认GTK版本
