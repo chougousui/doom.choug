@@ -130,3 +130,11 @@
 
 ;; windows下也默认使用LF
 (setq-default buffer-file-coding-system 'utf-8-unix)
+
+;; Linux 的剪贴板分 CLIPBOARD(显式复制)和 PRIMARY(选中即复制)两种,Windows 只有一个剪贴板.
+;; 原则: 每一次复制都必须由我显式发起,Emacs 不读写 PRIMARY.
+;; (顺带避开 WSLg + emacs-pgtk 下 M-w 后剪贴板反而被清空的问题)
+(setq select-active-regions nil    ;; 选区变化时不写 PRIMARY
+      select-enable-primary nil    ;; 复制不写,粘贴不读 PRIMARY(默认即 nil,此处显式声明)
+      mouse-drag-copy-region nil)  ;; 鼠标选中不自动复制(默认即 nil,此处显式声明)
+(global-unset-key [mouse-2])       ;; 中键默认绑定 mouse-yank-primary,即粘贴 PRIMARY

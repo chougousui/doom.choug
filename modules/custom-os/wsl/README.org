@@ -17,3 +17,5 @@ wslg环境下一些需要手动处理的问题
    }
    #+end_src
    可以在emacs内运行 =M-x emacs-version= 来确认GTK版本
+3. 复制内容无法粘贴到宿主机: 从WSLg应用Emacs中复制的内容无法粘贴到宿主机上,而同为WSLg应用的Chromium一切正常.原因是Emacs在选区变化时会把选区写入PRIMARY,GTK3写PRIMARY时会先清空与CLIPBOARD共用的对外"可粘贴格式表",而WSLg不支持PRIMARY,导致该表无法重新登记.
+   =(setq select-active-regions nil)= 让Emacs不再把选区写入PRIMARY即可避开.出于个人偏好,该设置已写在 =choug= 模块的 =config.el= 中,本模块不再重复设置
