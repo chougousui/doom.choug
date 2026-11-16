@@ -1,0 +1,8 @@
+#+title: :custom sidebar
+
+* Description
+侧边栏相关配置.
+- 启用 ~:ui treemacs~ 时, 重新开启被 Doom 关闭的 ~treemacs-follow-mode~
+- Emacs 31 及以上, speedbar 优先在窗口中打开, 默认宽度 40, 最大宽度 60
+- speedbar 显示无法识别类型的文件
+- 启用 ~:ui window-select~ 时, winum 和 ace-window 不为 speedbar 窗口编号
