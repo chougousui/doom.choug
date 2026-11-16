@@ -220,6 +220,7 @@
        ;;velocity-script
        revert-whitespace
        modeline-ext
+       window-select-ext
        plantuml-ext
        iedit
        ;;textcraft
