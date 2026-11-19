@@ -1,0 +1,8 @@
+#+title: :custom vc-ext
+
+* Description
+提供一些更符合个人习惯的 vc 函数。
+
+* Usage
+- =M-x vc-blame=：调用 =vc-annotate=，在新 buffer 中按行显示当前文件最后一次修改的版本、作者和日期，Git 下实际执行的是 =git blame=。
+- =C-u M-x vc-blame=：与 =C-u M-x vc-annotate= 相同，先选择要查看的版本，再输入颜色范围覆盖的天数。

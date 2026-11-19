@@ -222,6 +222,7 @@
        modeline-ext
        window-select-ext
        sidebar
+       vc-ext
        plantuml-ext
        iedit
        ;;textcraft
