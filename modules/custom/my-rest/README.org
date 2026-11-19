@@ -11,6 +11,7 @@
 - JSON 响应缓冲区改用 =json-mode= 显示（verb 默认使用 =js-mode=）
 - 所有请求默认使用 =Accept: application/json=；响应 Body 为空时自动显示响应 Header buffer
 - 通过 Emacs 内置 SQLite 将实际收到响应的请求持久化到 =$XDG_STATE_HOME/ehc/history.sqlite3=
+- 提供 =hc-toggle-header= 命令，调用 =verb-toggle-show-headers=，在响应 buffer 中显示或隐藏响应 Header buffer
 - 在 =hc-mode-map= 中将 =C-t= 绑定到 Verb 提供的独立前缀 map =verb-command-map=，并在 =verb-command-map= 中按 request 和 variables 分组。只有先按 =C-t= 后，=r= 和 =v= 才作为分组前缀，普通字符输入不受影响。=C-t= 只在 =hc-mode= buffer 中覆盖原有的 =transpose-chars=；=C-c C-c= 仍在 =verb-mode-map= 中直接发送请求：
 
 | 按键        | 命令                                      | 行为                                             |

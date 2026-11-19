@@ -17,6 +17,11 @@
   (add-to-list 'auto-mode-alist
                '("\\.ehc\\'" . hc-mode))
 
+  (defun hc-toggle-header ()
+    "调用 `verb-toggle-show-headers'，显示或隐藏响应 Header buffer。"
+    (interactive)
+    (call-interactively #'verb-toggle-show-headers))
+
   ;; C-t 仅在 hc-mode 中进入 Verb 命令 map
   (map! :map hc-mode-map
         :desc "Verb"
